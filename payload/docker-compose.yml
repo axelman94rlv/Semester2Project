@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  payload:
+    image: node:20-alpine
+    container_name: payload-cms
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/home/node/app
+      - payload-node-modules:/home/node/app/node_modules
+      - payload-next-cache:/home/node/app/.next
+    working_dir: /home/node/app
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+
+  postgres:
+    image: postgres:16
+    container_name: payload-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: payload
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: payload
+    ports:
+      - "5432:5432"
+    volumes:
+      - payload-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  payload-postgres-data:
+  payload-node-modules:
+  payload-next-cache:

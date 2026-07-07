@@ -1,17 +1,9 @@
-import generateStructure from "../../lib/generate-structure.js";
-
+import render from "../../lib/render.js";
 export default function BrowserRouter(rootElement, routes) {
   function refreshPage() {
     const pathname = window.location.pathname;
     const generator = routes[pathname] ?? routes["*"];
-    if (rootElement.childNodes[0]) {
-      rootElement.replaceChild(
-        generateStructure(generator()),
-        rootElement.childNodes[0],
-      );
-    } else {
-      rootElement.appendChild(generateStructure(generator()));
-    }
+    render(rootElement, generator());
   }
   window.addEventListener("popstate", refreshPage);
   window.addEventListener("pushstate", refreshPage);

@@ -3,9 +3,13 @@ export default function generateStructure(structure) {
   if (structure.attributes) {
     for (let attribute of structure.attributes) {
       if (attribute[0] === "class") {
-        for (let className of attribute[1]) {
-          element.classList.add(className);
-        }
+  if (Array.isArray(attribute[1])) {
+    for (let className of attribute[1]) {
+      element.classList.add(className);
+    }
+  } else {
+    element.className = attribute[1];
+  }
       } else if (attribute[0] === "style") {
         const customStyle = Object.fromEntries(attribute[1]);
         element.style = Object.assign(element.style, customStyle);

@@ -46,7 +46,8 @@ export default function PageTable() {
               children: Array.from({ length: 20 }, (_, j) => ({
                 type: "td",
                 events: [["click", onTdClick]],
-                attributes: [["data-key", `${i},${j}`]],
+                  attributes: [
+                  ["data-key", `${i},${j}`],["class", ["bg-color-red", "text-white", "p-4"]]],
                 children: [data[`${i},${j}`] ?? "Default"],
               })),
             })),

@@ -6,11 +6,33 @@
 
 import render from "../lib/render.js";
 import createStore from "../lib/store.js";
+import seoScore from "../lib/seo-score.js";
 import PortfolioPage from "./pages/portfolio-page.js";
+import SeoPanel from "./components/seo-panel.js";
 import donnees from "./data.js";
 
 const root = document.getElementById("root");
 const store = createStore(donnees);
+
+// Le panneau SEO vit dans sa propre racine, hors de #root : il audite le
+// rendu sans se compter lui-même (seoScore ne regarde que la racine passée).
+const seoRoot = document.createElement("div");
+document.body.appendChild(seoRoot);
+let seoOuvert = false;
+
+function auditerSeo() {
+  const rapport = seoScore(document, root);
+  render(
+    seoRoot,
+    SeoPanel(rapport, {
+      ouvert: seoOuvert,
+      onToggle() {
+        seoOuvert = !seoOuvert;
+        auditerSeo();
+      },
+    })
+  );
+}
 
 // Les actions que la page peut déclencher (passées en props aux composants).
 const actions = {
@@ -22,6 +44,7 @@ const actions = {
 
 function paint() {
   render(root, PortfolioPage(store.getState(), actions), store.getState());
+  auditerSeo(); // le DOM vient d'être (re)produit : on le note
 }
 
 store.subscribe(paint); // à chaque setState, on repeint

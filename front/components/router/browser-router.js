@@ -1,40 +1,29 @@
-import generateStructure from "../../lib/generate-structure.js";
+import render from "../../lib/render.js";
 
 export default function BrowserRouter(rootElement, routes) {
-  async function render() {
+  async function refreshPage() {
     const pathname = window.location.pathname;
     const generator = routes[pathname] ?? routes["*"];
-
     try {
-      rootElement.innerHTML = "Chargement...";
-
       const pageStructure = await generator();
-
-      rootElement.innerHTML = "";
-      rootElement.appendChild(generateStructure(pageStructure));
+      render(rootElement, pageStructure);
     } catch (error) {
       console.error("Erreur pendant le rendu :", error);
-
-      rootElement.innerHTML = "";
-
-      const errorElement = document.createElement("p");
-      errorElement.textContent = "Erreur lors du chargement de la page.";
-      rootElement.appendChild(errorElement);
+      render(rootElement, {
+        type: "p",
+        children: ["Erreur lors du chargement de la page."],
+      });
     }
   }
-
-  window.addEventListener("popstate", render);
-  window.addEventListener("pushstate", render);
-
-  render();
+  window.addEventListener("popstate", refreshPage);
+  window.addEventListener("pushstate", refreshPage);
+  refreshPage();
 }
 
 export function BrowserLink(url, label) {
   return {
     type: "a",
-    attributes: [
-      ["href", url],
-    ],
+    attributes: [["href", url]],
     events: [
       [
         "click",

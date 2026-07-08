@@ -1,5 +1,4 @@
-import generateStructure from "../../lib/generate-structure.js";
-
+import render from "../../lib/render.js";
 export default function BrowserRouter(rootElement, routes) {
   async function render() {
     const pathname = window.location.pathname;

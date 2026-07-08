@@ -1,4 +1,5 @@
-export default function generateStructure(structure) {
+import "./interpolate.js";
+export default function generateStructure(structure, data = {}) {
   const element = document.createElement(structure.type);
   if (structure.attributes) {
     for (let attribute of structure.attributes) {
@@ -32,9 +33,9 @@ export default function generateStructure(structure) {
     for (let child of structure.children) {
       let childElement;
       if (typeof child === "string") {
-        childElement = document.createTextNode(child);
+        childElement = document.createTextNode(child.interpolate(data));
       } else {
-        childElement = generateStructure(child);
+        childElement = generateStructure(child, data);
       }
       element.appendChild(childElement);
     }

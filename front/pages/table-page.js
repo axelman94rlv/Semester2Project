@@ -1,16 +1,24 @@
 import Link from "../components/router/link.js";
+import { getCollection } from "../api/payload.js";
 
-export default function PageTable() {
+export default async function PageTable() {
   const dataStringified = sessionStorage.getItem("zaza");
-  const data = JSON.parse(dataStringified) || {};
+  const tableData = dataStringified ? JSON.parse(dataStringified) : {};
+
+  const payloadData = await getCollection("posts");
+    const posts = payloadData?.docs ?? [];
+
+  console.log("Payload data :", payloadData);
 
   function onTdClick(event) {
     const td = event.currentTarget;
     const textNode = td.childNodes[0];
-    const text = textNode.textContent;
+    const text = textNode?.textContent ?? "";
+
     const input = document.createElement("input");
     input.value = text;
-    td.removeChild(textNode);
+
+    td.innerHTML = "";
     td.appendChild(input);
     input.focus();
 
@@ -19,10 +27,16 @@ export default function PageTable() {
       const text = input.value;
       const textNode = document.createTextNode(text);
       const td = input.parentNode;
-      td.replaceChild(textNode, input);
+
+      td.innerHTML = "";
+      td.appendChild(textNode);
+
       const key = td.dataset.key;
-      data[key] = text;
-      sessionStorage.setItem("zaza", JSON.stringify(data));
+      tableData[key] = text;
+
+      sessionStorage.setItem("zaza", JSON.stringify(tableData));
+
+      td.addEventListener("click", onTdClick);
     });
 
     td.removeEventListener("click", onTdClick);
@@ -32,10 +46,17 @@ export default function PageTable() {
     type: "div",
     children: [
       Link("/gallery", "Gallery Page"),
-      /* {
-        type: Link,
-        attributes: [["url", "/gallery"], ["title", "Gallery Page"]],
-      }, */
+
+      {
+        type: "p",
+        children: [`Posts récupérés : ${payloadData?.docs?.length ?? 0}`],
+      },
+      ...posts.map((post) => ({
+        type: "p",
+        children: [post.title ?? "Sans titre"],
+      })),
+    
+
       {
         type: "table",
         children: [
@@ -46,9 +67,11 @@ export default function PageTable() {
               children: Array.from({ length: 20 }, (_, j) => ({
                 type: "td",
                 events: [["click", onTdClick]],
-                  attributes: [
-                  ["data-key", `${i},${j}`],["class", ["bg-color-red", "text-white", "p-4"]]],
-                children: [data[`${i},${j}`] ?? "Default"],
+                attributes: [
+                  ["data-key", `${i},${j}`],
+                  ["class", ["bg-red-500", "text-white", "p-4", "border"]],
+                ],
+                children: [tableData[`${i},${j}`] ?? "Default"],
               })),
             })),
           },

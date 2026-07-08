@@ -1,37 +1,51 @@
 import generateStructure from "../../lib/generate-structure.js";
 
 export default function BrowserRouter(rootElement, routes) {
-  function refreshPage() {
+  async function render() {
     const pathname = window.location.pathname;
     const generator = routes[pathname] ?? routes["*"];
-    if (rootElement.childNodes[0]) {
-      rootElement.replaceChild(
-        generateStructure(generator()),
-        rootElement.childNodes[0],
-      );
-    } else {
-      rootElement.appendChild(generateStructure(generator()));
+
+    try {
+      rootElement.innerHTML = "Chargement...";
+
+      const pageStructure = await generator();
+
+      rootElement.innerHTML = "";
+      rootElement.appendChild(generateStructure(pageStructure));
+    } catch (error) {
+      console.error("Erreur pendant le rendu :", error);
+
+      rootElement.innerHTML = "";
+
+      const errorElement = document.createElement("p");
+      errorElement.textContent = "Erreur lors du chargement de la page.";
+      rootElement.appendChild(errorElement);
     }
   }
-  window.addEventListener("popstate", refreshPage);
-  window.addEventListener("pushstate", refreshPage);
-  refreshPage();
+
+  window.addEventListener("popstate", render);
+  window.addEventListener("pushstate", render);
+
+  render();
 }
 
-export function BrowserLink(url, title) {
+export function BrowserLink(url, label) {
   return {
     type: "a",
-    attributes: [["href", url]],
-    children: [title],
+    attributes: [
+      ["href", url],
+    ],
     events: [
       [
         "click",
-        (event) => {
+        function (event) {
           event.preventDefault();
-          window.history.pushState({}, undefined, url);
+
+          window.history.pushState({}, "", url);
           window.dispatchEvent(new Event("pushstate"));
         },
       ],
     ],
+    children: [label],
   };
 }

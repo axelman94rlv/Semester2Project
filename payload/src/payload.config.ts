@@ -25,12 +25,14 @@ export default buildConfig({
 
   cors: [
     'http://127.0.0.1:3001',   
-    'http://localhost:3001',   
+    'http://localhost:3001',
+    "http://localhost:5173",   
   ],
 
   csrf : [
     'http://127.0.0.1:3001',
     'http://localhost:3001',
+    "http://localhost:5173",
   ],
 
   admin: {

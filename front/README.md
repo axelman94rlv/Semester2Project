@@ -374,6 +374,237 @@ npm run preview
 
 ---
 
+# Utilisation de l’API Payload
+
+Cette partie explique comment connecter le frontend Vanilla JS à une API Payload lancée en local.
+
+---
+
+## Principe
+
+Le frontend tourne sur :
+
+```txt
+http://localhost:5173
+```
+
+Payload tourne sur :
+
+```txt
+http://localhost:3000
+```
+
+L’API de Payload est disponible ici :
+
+```txt
+http://localhost:3000/api
+```
+
+Exemple pour récupérer les posts :
+
+```txt
+http://localhost:3000/api/posts
+```
+
+---
+
+## Fichier de configuration
+
+Créer un fichier :
+
+```txt
+api/config.js
+```
+
+Contenu :
+
+```js
+export const API_BASE_URL = "http://localhost:3000/api";
+```
+
+Ce fichier permet de centraliser l’URL de l’API.
+
+Si l’URL change plus tard, il suffit de modifier ce fichier.
+
+---
+
+## Fichier pour appeler Payload
+
+Créer un fichier :
+
+```txt
+api/payload.js
+```
+
+Contenu :
+
+```js
+import { API_BASE_URL } from "./config.js";
+
+export async function getCollection(collectionName) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${collectionName}`);
+
+    if (!response.ok) {
+      throw new Error(`Erreur API : ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Erreur lors de la récupération Payload :", error);
+    return null;
+  }
+}
+```
+
+Cette fonction permet de récupérer n’importe quelle collection Payload.
+
+---
+
+## Exemple d’utilisation
+
+Dans une page, importer la fonction :
+
+```js
+import { getCollection } from "../api/payload.js";
+```
+
+Puis récupérer les données :
+
+```js
+const payloadData = await getCollection("posts");
+```
+
+Payload renvoie généralement les données dans `docs`.
+
+Exemple :
+
+```js
+const posts = payloadData?.docs ?? [];
+```
+
+---
+
+## Exemple complet dans une page
+
+```js
+import { getCollection } from "../api/payload.js";
+
+export default async function PageTable() {
+  const payloadData = await getCollection("posts");
+
+  const posts = payloadData?.docs ?? [];
+
+  return {
+    type: "div",
+    children: [
+      {
+        type: "h1",
+        children: ["Liste des posts"],
+      },
+
+      ...posts.map((post) => ({
+        type: "p",
+        children: [post.title ?? "Sans titre"],
+      })),
+    ],
+  };
+}
+```
+
+---
+
+## Important
+
+Comme on utilise `await`, la fonction de la page doit être `async`.
+
+```js
+export default async function PageTable() {
+  const data = await getCollection("posts");
+
+  return {
+    type: "div",
+    children: ["Page chargée"],
+  };
+}
+```
+
+Le routeur doit aussi attendre la page :
+
+```js
+const pageStructure = await generator();
+```
+
+Sinon, le framework essaiera d’afficher une `Promise` au lieu d’afficher la page.
+
+---
+
+## CORS Payload
+
+Si le frontend ne peut pas contacter Payload, il faut vérifier le CORS.
+
+Dans `payload.config.ts` ou `payload.config.js`, ajouter :
+
+```js
+export default buildConfig({
+  cors: [
+    "http://localhost:5173",
+  ],
+
+  csrf: [
+    "http://localhost:5173",
+  ],
+
+  // reste de la configuration
+});
+```
+
+Puis redémarrer Payload :
+
+```bash
+npm run dev
+```
+
+---
+
+## Vérifications rapides
+
+Vérifier que Payload est lancé :
+
+```txt
+http://localhost:3000
+```
+
+Vérifier que l’API répond :
+
+```txt
+http://localhost:3000/api/posts
+```
+
+Vérifier que le frontend est lancé :
+
+```txt
+http://localhost:5173
+```
+
+---
+
+## Résumé
+
+```txt
+api/config.js       → contient l’URL de base de Payload
+api/payload.js      → contient la fonction fetch réutilisable
+pages/*.js          → utilisent getCollection()
+Payload /api/posts  → renvoie les posts
+```
+
+
 ## Auteur
+
+- Baptiste ROY
+- Axel BARBELION
+- Enzo MOITA
 
 Projet réalisé dans le cadre du Semester2Project.

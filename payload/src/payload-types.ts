@@ -790,6 +790,10 @@ export interface Form {
 export interface Project {
   id: number;
   title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
   slug: string;
   description?: string | null;
   year?: number | null;
@@ -1383,6 +1387,7 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
+  generateSlug?: T;
   slug?: T;
   description?: T;
   year?: T;

@@ -29,11 +29,12 @@ export default function BrowserRouter(rootElement, routes) {
   render();
 }
 
-export function BrowserLink(url, label) {
+export function BrowserLink(url, label, attr) {
   return {
     type: "a",
     attributes: [
       ["href", url],
+      ...attr,
     ],
     events: [
       [

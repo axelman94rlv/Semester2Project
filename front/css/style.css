@@ -101,11 +101,11 @@ html {
 
 .roue-tick {
   animation: tick-rotation 8s steps(60, end) infinite;
-  animation-play-state: paused;
+  animation-play-state: running;
 }
 
 .roue-tick.is-running {
-  animation-play-state: running;
+  animation-play-state: paused;
 }
 
 body {

@@ -29,7 +29,7 @@ export default function Roue(letter) {
           "flex",
           "items-center",
           "justify-center",
-          "cursor-pointer",
+         
         ],
       ],
     ],
@@ -77,6 +77,7 @@ export default function Roue(letter) {
               "text-[1.5rem]",
               "leading-none",
               "pointer-events-none",
+             
             ],
           ],
         ],

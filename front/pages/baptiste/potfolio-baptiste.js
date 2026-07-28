@@ -5,6 +5,7 @@ import { getCollection } from "../../api/payload.js";
 import { NavBar } from "../../components/baptiste/nav.js";
 import { Intro } from "../../components/baptiste/intro.js";
 import CreatifPart from "../../components/baptiste/creatif.js";
+import QualitfyPart from "../../components/baptiste/qualify.js";
 
 export default async function PagePortfolioBaptiste() {
   const payloadData = await getCollection("projects");
@@ -22,6 +23,7 @@ export default async function PagePortfolioBaptiste() {
       NavBar(),
       Intro(),
       CreatifPart(),
+      QualitfyPart(),
   
       
      

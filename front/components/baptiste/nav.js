@@ -10,7 +10,6 @@ function formatPosition(position) {
   const absolutePosition = Math.abs(roundedPosition);
   const formattedPosition = String(absolutePosition).padStart(3, "0");
 
-  
   return `- ${formattedPosition}`;
 }
 
@@ -128,6 +127,10 @@ export function NavBar() {
           "after:w-px",
           "after:bg-[linear-gradient(to_bottom,_white_0_15px,_transparent_5px_5px)]",
           "after:bg-[length:1px_30px]",
+
+          "bg-black/20",
+          "border-r",
+          "border-white/10",
         ],
       ],
     ],
@@ -139,13 +142,7 @@ export function NavBar() {
         attributes: [
           [
             "class",
-            [
-              "flex",
-              "flex-col",
-              "w-full",
-              "items-center",
-              "text-center",
-            ],
+            ["flex", "flex-col", "w-full", "items-center", "text-center"],
           ],
         ],
 
@@ -165,7 +162,7 @@ export function NavBar() {
           ),
 
           Link("#creatifSection", "01", [["class", linkStyle]]),
-          Link("/", "02", [["class", linkStyle]]),
+          Link("#qualifyPart", "02", [["class", linkStyle]]),
           Link("/", "03", [["class", linkStyle]]),
           Link("/", "04", [["class", linkStyle]]),
           Link("/", "05", [["class", linkStyle]]),
@@ -198,9 +195,7 @@ export function NavBar() {
           {
             type: "span",
 
-            attributes: [
-              ["class", ["scroll-position", "tabular-nums"]],
-            ],
+            attributes: [["class", ["scroll-position", "tabular-nums"]]],
 
             children: ["- 000"],
           },
@@ -208,9 +203,7 @@ export function NavBar() {
           {
             type: "span",
 
-            attributes: [
-              ["class", ["scroll-position", "tabular-nums"]],
-            ],
+            attributes: [["class", ["scroll-position", "tabular-nums"]]],
 
             children: ["- 000"],
           },
@@ -218,9 +211,7 @@ export function NavBar() {
           {
             type: "span",
 
-            attributes: [
-              ["class", ["scroll-position", "tabular-nums"]],
-            ],
+            attributes: [["class", ["scroll-position", "tabular-nums"]]],
 
             children: ["- 000"],
           },

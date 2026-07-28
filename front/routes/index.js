@@ -7,6 +7,6 @@ export default {
   "/": PageGallery,
   "/table": PageTable,
   "/gallery": PageGallery,
-  "/test": PagePortfolioBaptiste,
+  "/baptiste/portfolio": PagePortfolioBaptiste,
   "*": Page404,
 };

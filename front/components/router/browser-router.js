@@ -12,6 +12,12 @@ export default function BrowserRouter(rootElement, routes) {
 
       rootElement.innerHTML = "";
       rootElement.appendChild(generateStructure(pageStructure));
+
+      if (window.location.hash) {
+        requestAnimationFrame(() => {
+          scrollToAnchor(window.location.hash);
+        });
+      }
     } catch (error) {
       console.error("Erreur pendant le rendu :", error);
 
@@ -19,6 +25,7 @@ export default function BrowserRouter(rootElement, routes) {
 
       const errorElement = document.createElement("p");
       errorElement.textContent = "Erreur lors du chargement de la page.";
+
       rootElement.appendChild(errorElement);
     }
   }
@@ -29,24 +36,68 @@ export default function BrowserRouter(rootElement, routes) {
   render();
 }
 
-export function BrowserLink(url, label, attr) {
+function scrollToAnchor(hash) {
+  const target = document.querySelector(hash);
+
+  if (!target) return;
+
+  target.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
+
+export function BrowserLink(url, label, attr = []) {
   return {
     type: "a",
+
     attributes: [
       ["href", url],
       ...attr,
     ],
+
     events: [
       [
         "click",
         function (event) {
           event.preventDefault();
 
+          if (url.startsWith("#")) {
+            window.history.pushState(
+              {},
+              "",
+              `${window.location.pathname}${url}`,
+            );
+
+            scrollToAnchor(url);
+
+            return;
+          }
+
+          const destination = new URL(url, window.location.origin);
+          const currentPath = window.location.pathname;
+
+          if (
+            destination.pathname === currentPath &&
+            destination.hash
+          ) {
+            window.history.pushState(
+              {},
+              "",
+              `${destination.pathname}${destination.hash}`,
+            );
+
+            scrollToAnchor(destination.hash);
+
+            return;
+          }
+
           window.history.pushState({}, "", url);
           window.dispatchEvent(new Event("pushstate"));
         },
       ],
     ],
+
     children: [label],
   };
 }

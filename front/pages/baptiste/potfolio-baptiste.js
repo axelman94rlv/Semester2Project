@@ -1,6 +1,10 @@
 import Link from "../../components/router/link.js";
 import { getCollection } from "../../api/payload.js";
+
+
 import { NavBar } from "../../components/baptiste/nav.js";
+import { Intro } from "../../components/baptiste/intro.js";
+import CreatifPart from "../../components/baptiste/creatif.js";
 
 export default async function PagePortfolioBaptiste() {
   const payloadData = await getCollection("projects");
@@ -12,10 +16,15 @@ export default async function PagePortfolioBaptiste() {
   return {
     type: "main",
     attributes: [
-      ["class", ["min-h-screen", "bg-[#171717]", "text-white", "p-8"]],
+      ["class", ["min-h-screen", "h-[1000rem]", "bg-[#171717]", "text-white"]],
     ],
     children: [
-      NavBar()
+      NavBar(),
+      Intro(),
+      CreatifPart(),
+  
+      
+     
     ],
   };
 }

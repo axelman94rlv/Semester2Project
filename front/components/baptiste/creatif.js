@@ -1,5 +1,5 @@
-import Rote from "../../lib/img/Rote.svg";
-import Roue from "./elements/roue";
+import Rote from "../../lib/img/baptiste/Rote.svg";
+import Roue from "./components/roue";
 
 
 export default function CreatifPart() {

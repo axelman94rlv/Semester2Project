@@ -1,11 +1,11 @@
-import createTextCard from "./elements/cardText";
-import createImageCard from "./elements/cardImage";
+import createTextCard from "./components/cardText";
+import createImageCard from "./components/cardImage";
 
-import QualifyVideo from "../../lib/img/Qualify.mp4";
+import QualifyVideo from "../../lib/img/baptiste/Qualify.mp4";
 
-import Rave from "../../lib/img/rave.png";
-import Rave2 from "../../lib/img/rave2.png";
-import Rave3 from "../../lib/img/rave3.png";
+import Rave from "../../lib/img/baptiste/rave.png";
+import Rave2 from "../../lib/img/baptiste/rave2.png";
+import Rave3 from "../../lib/img/baptiste/rave3.png";
 
 export default function QualitfyPart() {
   const cards = [
@@ -37,7 +37,7 @@ export default function QualitfyPart() {
     attributes: [
       [
         "class",
-        ["w-full", "min-h-screen", "flex", "items-center", "justify-center"],
+        ["w-full", "min-h-screen", "flex", "items-center", "justify-center", "mt-[12rem]"],
       ],
       ["id", "qualifyPart"],
     ],

@@ -799,6 +799,12 @@ export interface Project {
   year?: number | null;
   role?: string | null;
   liveUrl?: string | null;
+  competences?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1393,6 +1399,12 @@ export interface ProjectsSelect<T extends boolean = true> {
   year?: T;
   role?: T;
   liveUrl?: T;
+  competences?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,5 +1,5 @@
-import Ronce from "../../lib/img/Ronce.svg";
-import Line from "../../lib/img/Line.svg";
+import Ronce from "../../lib/img/baptiste/Ronce.svg";
+import Line from "../../lib/img/baptiste/Line.svg";
 
 export function Intro() {
   return {

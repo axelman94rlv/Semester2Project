@@ -1,4 +1,4 @@
-import RoueImage from "../../../lib/img/Roue.svg";
+import RoueImage from "../../../lib/img/baptiste/Roue.svg";
 
 export default function Roue(letter) {
   function onMouseEnter(event) {

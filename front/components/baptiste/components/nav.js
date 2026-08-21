@@ -1,9 +1,10 @@
-import Link from "../../components/router/link.js";
-import Logo from "../../lib/img/Signature.svg";
+import Link from "../../router/link.js";
+import Logo from "../../../lib/img/baptiste/Signature.svg";
 
 let initialPositions = [];
 let animationFrameId = null;
 let currentScrollPosition = 0;
+let isScrollCounterSetup = false;
 
 function formatPosition(position) {
   const roundedPosition = Math.round(position);
@@ -13,30 +14,24 @@ function formatPosition(position) {
   return `- ${formattedPosition}`;
 }
 
-function getScrollPosition(event) {
-  const target = event?.target;
+function getCurrentScrollPosition(event) {
+  const windowScroll =
+    window.scrollY ||
+    document.documentElement.scrollTop ||
+    document.body.scrollTop ||
+    0;
 
-  // Scroll général de la page
-  if (
-    !target ||
-    target === document ||
-    target === document.documentElement ||
-    target === document.body
-  ) {
-    return (
-      window.scrollY ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0
-    );
+  if (windowScroll > 0) {
+    return windowScroll;
   }
 
-  // Scroll d'un conteneur avec overflow
+  const target = event?.target;
+
   if (target instanceof HTMLElement) {
     return target.scrollTop;
   }
 
-  return window.scrollY || 0;
+  return 0;
 }
 
 function updatePositions() {
@@ -56,7 +51,7 @@ function updatePositions() {
 }
 
 function onScroll(event) {
-  currentScrollPosition = getScrollPosition(event);
+  currentScrollPosition = getCurrentScrollPosition(event);
 
   if (animationFrameId !== null) return;
 
@@ -68,22 +63,49 @@ function initializePositions() {
 
   if (counters.length === 0) return;
 
-  initialPositions = Array.from(counters).map((counter) => {
-    return counter.getBoundingClientRect().top;
-  });
-
   currentScrollPosition =
     window.scrollY ||
     document.documentElement.scrollTop ||
     document.body.scrollTop ||
     0;
 
+  initialPositions = Array.from(counters).map((counter) => {
+    return counter.getBoundingClientRect().top + currentScrollPosition;
+  });
+
   updatePositions();
 }
 
-// Le mode capture détecte aussi le scroll d'un conteneur interne.
-document.removeEventListener("scroll", onScroll, true);
-document.addEventListener("scroll", onScroll, true);
+function scheduleInitializePositions() {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      initializePositions();
+    });
+  });
+
+  setTimeout(initializePositions, 50);
+  setTimeout(initializePositions, 250);
+  setTimeout(initializePositions, 600);
+}
+
+function setupScrollCounter() {
+  if (isScrollCounterSetup) {
+    scheduleInitializePositions();
+    return;
+  }
+
+  isScrollCounterSetup = true;
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("scroll", onScroll, true);
+
+  window.addEventListener("resize", scheduleInitializePositions);
+  window.addEventListener("load", scheduleInitializePositions);
+  window.addEventListener("pageshow", scheduleInitializePositions);
+  window.addEventListener("hashchange", scheduleInitializePositions);
+
+  scheduleInitializePositions();
+}
 
 export function NavBar() {
   const linkStyle = [
@@ -100,10 +122,7 @@ export function NavBar() {
     "font-light",
   ];
 
-  // Attend que la navbar soit réellement ajoutée au DOM.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(initializePositions);
-  });
+  setupScrollCounter();
 
   return {
     type: "nav",
@@ -125,7 +144,7 @@ export function NavBar() {
           "after:top-0",
           "after:h-full",
           "after:w-px",
-          "after:bg-[linear-gradient(to_bottom,_white_0_15px,_transparent_5px_5px)]",
+          "after:bg-[linear-gradient(to_bottom,_white_0_15px,_transparent_15px_30px)]",
           "after:bg-[length:1px_30px]",
 
           "bg-black/20",
@@ -142,7 +161,13 @@ export function NavBar() {
         attributes: [
           [
             "class",
-            ["flex", "flex-col", "w-full", "items-center", "text-center"],
+            [
+              "flex",
+              "flex-col",
+              "w-full",
+              "items-center",
+              "text-center",
+            ],
           ],
         ],
 
@@ -158,14 +183,36 @@ export function NavBar() {
                 ["class", ["w-[4rem]", "h-[4rem]"]],
               ],
             },
-            [["class", [...linkStyle, "h-[9rem]"]]],
+            [
+              [
+                "class",
+                [
+                  ...linkStyle,
+                  "h-[9rem]",
+                ],
+              ],
+            ],
           ),
 
-          Link("#creatifSection", "01", [["class", linkStyle]]),
-          Link("#qualifyPart", "02", [["class", linkStyle]]),
-          Link("/", "03", [["class", linkStyle]]),
-          Link("/", "04", [["class", linkStyle]]),
-          Link("/", "05", [["class", linkStyle]]),
+          Link("#creatifSection", "01", [
+            ["class", linkStyle],
+          ]),
+
+          Link("#qualifyPart", "02", [
+            ["class", linkStyle],
+          ]),
+
+          Link("/", "03", [
+            ["class", linkStyle],
+          ]),
+
+          Link("/", "04", [
+            ["class", linkStyle],
+          ]),
+
+          Link("/", "05", [
+            ["class", linkStyle],
+          ]),
         ],
       },
 
@@ -195,7 +242,15 @@ export function NavBar() {
           {
             type: "span",
 
-            attributes: [["class", ["scroll-position", "tabular-nums"]]],
+            attributes: [
+              [
+                "class",
+                [
+                  "scroll-position",
+                  "tabular-nums",
+                ],
+              ],
+            ],
 
             children: ["- 000"],
           },
@@ -203,7 +258,15 @@ export function NavBar() {
           {
             type: "span",
 
-            attributes: [["class", ["scroll-position", "tabular-nums"]]],
+            attributes: [
+              [
+                "class",
+                [
+                  "scroll-position",
+                  "tabular-nums",
+                ],
+              ],
+            ],
 
             children: ["- 000"],
           },
@@ -211,7 +274,15 @@ export function NavBar() {
           {
             type: "span",
 
-            attributes: [["class", ["scroll-position", "tabular-nums"]]],
+            attributes: [
+              [
+                "class",
+                [
+                  "scroll-position",
+                  "tabular-nums",
+                ],
+              ],
+            ],
 
             children: ["- 000"],
           },

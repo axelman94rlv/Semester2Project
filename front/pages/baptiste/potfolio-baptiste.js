@@ -6,6 +6,7 @@ import { Intro } from "../../components/baptiste/intro.js";
 import CreatifPart from "../../components/baptiste/creatif.js";
 import QualitfyPart from "../../components/baptiste/qualify.js";
 import  ProjectPart  from "../../components/baptiste/project.js";
+import ContactForm from "../../components/baptiste/ContactForm.js";
 
 export default async function PagePortfolioBaptiste() {
  
@@ -20,6 +21,7 @@ export default async function PagePortfolioBaptiste() {
       CreatifPart(),
       QualitfyPart(),
       await ProjectPart(),
+      ContactForm(),
       
   
       

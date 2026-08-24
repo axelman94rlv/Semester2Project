@@ -20,6 +20,7 @@ export default function ContactForm() {
           "py-[6rem]",
           "text-[#f5f1d8]",
           "font-['InconsolataCustom']",
+          "mt-[12rem]",
         ],
       ],
     ],

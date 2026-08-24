@@ -6,14 +6,15 @@ import { Intro } from "../../components/baptiste/intro.js";
 import CreatifPart from "../../components/baptiste/creatif.js";
 import QualitfyPart from "../../components/baptiste/qualify.js";
 import  ProjectPart  from "../../components/baptiste/project.js";
-import ContactForm from "../../components/baptiste/ContactForm.js";
+import ContactForm from "../../components/baptiste/contactForm.js";
+import Footer from "../../components/baptiste/footer.js";
 
 export default async function PagePortfolioBaptiste() {
  
   return {
     type: "main",
     attributes: [
-      ["class", ["min-h-screen", "h-[1000rem]", "bg-[#171717]", "text-white"]],
+      ["class", ["min-h-screen", "bg-[#171717]", "text-white"]],
     ],
     children: [
       NavBar(),
@@ -22,6 +23,7 @@ export default async function PagePortfolioBaptiste() {
       QualitfyPart(),
       await ProjectPart(),
       ContactForm(),
+      Footer(),
       
   
       

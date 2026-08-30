@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { slugField } from 'payload'
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
@@ -10,10 +11,23 @@ export const Projects: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true },
+    slugField(),
     { name: 'description', type: 'textarea' },
     { name: 'year', type: 'number' },
     { name: 'role', type: 'text' },
     { name: 'liveUrl', type: 'text' },
+    {
+      name: "competences",
+      type: "array",
+      label: "Compétences",
+      fields: [
+        {
+          name: "name",
+          type: "text",
+          label: "Nom de la compétence",
+          required: true,
+        },
+      ],
+    },
   ],
 }

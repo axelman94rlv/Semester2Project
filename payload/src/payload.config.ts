@@ -9,16 +9,33 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
+import { Contacts } from "./collections/Contacts";
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
-import { getServerSideURL } from './utilities/getURL'
+import { Projects } from './collections/Projects'
+
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+
+  serverURL: 'http://localhost:3000',
+
+  cors: [
+    'http://127.0.0.1:3001',   
+    'http://localhost:3001',
+    "http://localhost:5173",   
+  ],
+
+  csrf : [
+    'http://127.0.0.1:3001',
+    'http://localhost:3001',
+    "http://localhost:5173",
+  ],
+
   admin: {
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
@@ -55,6 +72,7 @@ export default buildConfig({
       ],
     },
   },
+
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
@@ -62,8 +80,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
-  cors: [getServerSideURL()].filter(Boolean),
+  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts],
   globals: [Header, Footer],
   plugins,
   secret: process.env.PAYLOAD_SECRET,

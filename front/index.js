@@ -1,3 +1,5 @@
+import "./css/style.css";
+
 import BrowserRouter from "./components/router/browser-router.js";
 import routes from "./routes/index.js";
 

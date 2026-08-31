@@ -1,37 +1,74 @@
-export default function generateStructure(structure) {
+import "./interpolate.js";
+
+export default function generateStructure(structure, data = {}) {
+  if (structure === null || structure === undefined || structure === false) {
+    return document.createTextNode("");
+  }
+
+  if (typeof structure === "string") {
+    return document.createTextNode(structure.interpolate(data));
+  }
+
+  if (typeof structure === "number") {
+    return document.createTextNode(String(structure));
+  }
+
+  if (Array.isArray(structure)) {
+    const fragment = document.createDocumentFragment();
+
+    for (let child of structure) {
+      fragment.appendChild(generateStructure(child, data));
+    }
+
+    return fragment;
+  }
+
+  if (!structure.type) {
+    console.warn("Structure invalide, type manquant :", structure);
+    return document.createTextNode("");
+  }
+
   const element = document.createElement(structure.type);
+
   if (structure.attributes) {
     for (let attribute of structure.attributes) {
-      if (attribute[0] === "class") {
-        for (let className of attribute[1]) {
-          element.classList.add(className);
+      if (!Array.isArray(attribute)) continue;
+
+      const [name, value] = attribute;
+
+      if (!name) continue;
+
+      if (name === "class") {
+        if (Array.isArray(value)) {
+          element.className = value.filter(Boolean).join(" ");
+        } else {
+          element.className = value ?? "";
         }
-      } else if (attribute[0] === "style") {
-        const customStyle = Object.fromEntries(attribute[1]);
-        element.style = Object.assign(element.style, customStyle);
-      } else if (attribute[0].startsWith("data-")) {
-        const dataKey = attribute[0].replace("data-", "");
-        element.dataset[dataKey] = attribute[1];
+      } else if (name === "style") {
+        const customStyle = Object.fromEntries(value);
+        Object.assign(element.style, customStyle);
+      } else if (name.startsWith("data-")) {
+        const dataKey = name.replace("data-", "");
+        element.dataset[dataKey] = value;
       } else {
-        element.setAttribute(attribute[0], attribute[1]);
+        element.setAttribute(name, value);
       }
     }
   }
 
   if (structure.events) {
     for (let event of structure.events) {
-      element.addEventListener(event[0], event[1]);
+      const [eventName, callback] = event;
+
+      if (eventName && typeof callback === "function") {
+        element.addEventListener(eventName, callback);
+      }
     }
   }
 
   if (structure.children) {
     for (let child of structure.children) {
-      let childElement;
-      if (typeof child === "string") {
-        childElement = document.createTextNode(child);
-      } else {
-        childElement = generateStructure(child);
-      }
+      const childElement = generateStructure(child, data);
       element.appendChild(childElement);
     }
   }

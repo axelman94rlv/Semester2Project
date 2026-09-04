@@ -1,5 +1,6 @@
 import generateStructure from "../../lib/generate-structure.js";
 import Finder from "./finder.js";
+import Mail from "./mail.js";
 
 export const WINDOWS_LAYER_ID = "enzo-windows";
 
@@ -16,6 +17,7 @@ function positioned(windowStructure, { paddingTop = "8rem" } = {}) {
 
 const registry = {
   finder: () => positioned(Finder()),
+  mail: () => positioned(Mail(), { paddingTop: "4.5rem" }),
 };
 
 export function registerApp(key, factory) {

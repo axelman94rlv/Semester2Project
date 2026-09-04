@@ -1,19 +1,27 @@
 import finderIcon from "../../../lib/img/enzo/dock-finder.png";
 
+function dismiss(event) {
+  event.stopPropagation();
+  const notif = event.currentTarget.closest(".enzo-notification");
+  if (notif) notif.remove();
+}
+
 export function Notification({ onClick = null } = {}) {
   const events = [];
   if (onClick) events.push(["click", onClick]);
 
   return {
-    type: "button",
+    type: "div",
     attributes: [
-      ["type", "button"],
+      ["role", "button"],
+      ["tabindex", "0"],
       ["data-app", "mail"],
       [
         "class",
         [
           "enzo-sf",
           "enzo-notification",
+          "group",
           "fixed",
           "top-[42px]",
           "right-[20px]",
@@ -38,6 +46,42 @@ export function Notification({ onClick = null } = {}) {
     ],
     events,
     children: [
+      {
+        type: "button",
+        attributes: [
+          ["type", "button"],
+          ["aria-label", "Fermer la notification"],
+          ["title", "Fermer"],
+          [
+            "class",
+            [
+              "absolute",
+              "top-[-6px]",
+              "right-[-6px]",
+              "z-10",
+              "w-[16px]",
+              "h-[16px]",
+              "flex",
+              "items-center",
+              "justify-center",
+              "rounded-full",
+              "bg-black/35",
+              "hover:bg-black/60",
+              "text-white",
+              "text-[9px]",
+              "leading-none",
+              "shadow-[0_1px_4px_rgba(0,0,0,0.35)]",
+              "transition-opacity",
+              "opacity-0",
+              "group-hover:opacity-100",
+              "focus-visible:opacity-100",
+            ],
+          ],
+        ],
+        events: [["click", dismiss]],
+        children: ["✕"],
+      },
+
       {
         type: "img",
         attributes: [

@@ -1,14 +1,52 @@
+function closeNearestWindow(event) {
+  event.stopPropagation();
+  const win = event.currentTarget.closest("[data-window]");
+  if (win) win.remove();
+}
+
 export function TrafficLights() {
-  const dot = ["w-[12px]", "h-[12px]", "rounded-full"];
+  const dot = [
+    "w-[12px]",
+    "h-[12px]",
+    "rounded-full",
+    "flex",
+    "items-center",
+    "justify-center",
+    "leading-none",
+  ];
 
   return {
     type: "div",
-    attributes: [["class", ["flex", "items-center", "gap-[8px]"]]],
+    attributes: [["class", ["group", "flex", "items-center", "gap-[8px]"]]],
     children: [
       {
-        type: "span",
-        attributes: [["class", [...dot, "bg-[#ff5f57]"]]],
-        children: [],
+        type: "button",
+        attributes: [
+          ["type", "button"],
+          ["aria-label", "Fermer la fenêtre"],
+          ["title", "Fermer"],
+          ["class", [...dot, "bg-[#ff5f57]", "cursor-pointer"]],
+        ],
+        events: [["click", closeNearestWindow]],
+        children: [
+          {
+            type: "span",
+            attributes: [
+              [
+                "class",
+                [
+                  "text-[8px]",
+                  "font-bold",
+                  "text-black/45",
+                  "opacity-0",
+                  "transition-opacity",
+                  "group-hover:opacity-100",
+                ],
+              ],
+            ],
+            children: ["✕"],
+          },
+        ],
       },
       {
         type: "span",
@@ -25,6 +63,7 @@ export function TrafficLights() {
 }
 
 export default function Window({
+  name = "window",
   children = [],
   className = [],
   bodyClass = [],
@@ -34,6 +73,7 @@ export default function Window({
   return {
     type: "div",
     attributes: [
+      ["data-window", name],
       [
         "class",
         [
@@ -53,16 +93,7 @@ export default function Window({
         ? {
             type: "div",
             attributes: [
-              [
-                "class",
-                [
-                  "absolute",
-                  "top-[14px]",
-                  "left-[16px]",
-                  "z-30",
-                  "pointer-events-none",
-                ],
-              ],
+              ["class", ["absolute", "top-[14px]", "left-[16px]", "z-30"]],
             ],
             children: [TrafficLights()],
           }

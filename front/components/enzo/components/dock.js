@@ -5,8 +5,13 @@ import vscodeIcon from "../../../lib/img/enzo/dock-vscode.svg";
 import githubIcon from "../../../lib/img/enzo/dock-github.svg";
 import linkedinIcon from "../../../lib/img/enzo/dock-linkedin.svg";
 import stravaIcon from "../../../lib/img/enzo/dock-strava.svg";
+import { openApp } from "../windowManager.js";
 
 function DockIcon({ src, alt, app = null, href = null, onClick = null }) {
+  if (app && !href && !onClick) {
+    onClick = () => openApp(app);
+  }
+
   const iconClasses = [
     "block",
     "w-[45px]",

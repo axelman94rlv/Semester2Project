@@ -130,7 +130,7 @@ export function Mail() {
   return Window({
     name: "mail",
     trafficLights: false,
-    className: ["enzo-sf", "w-[830px]", "max-w-[92vw]", "flex", "flex-col"],
+    className: ["enzo-sf", "w-[940px]", "max-w-[92vw]", "flex", "flex-col"],
     bodyClass: ["flex", "flex-col", "h-full"],
     children: [
       {
@@ -267,7 +267,7 @@ export function Mail() {
             "class",
             [
               "flex-1",
-              "min-h-[22rem]",
+              "min-h-[26rem]",
               "w-full",
               "resize-none",
               "bg-transparent",

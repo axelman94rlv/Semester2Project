@@ -357,9 +357,9 @@ export function Finder({ projects = PROJECTS, className = [] } = {}) {
     trafficLights: false,
     className: [
       "enzo-sf",
-      "w-[800px]",
+      "w-[940px]",
       "max-w-[92vw]",
-      "min-h-[360px]",
+      "min-h-[460px]",
       ...className,
     ],
     bodyClass: ["flex", "flex-col", "h-full"],

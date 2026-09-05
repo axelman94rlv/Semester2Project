@@ -2,6 +2,7 @@ import generateStructure from "../../lib/generate-structure.js";
 import Finder from "./finder.js";
 import Mail from "./mail.js";
 import Contact from "./contact.js";
+import Launchpad from "./launchpad.js";
 
 export const WINDOWS_LAYER_ID = "enzo-windows";
 
@@ -15,6 +16,8 @@ const apps = {
   finder: { build: () => Finder(), width: 940, height: 480 },
   mail: { build: () => Mail(), width: 900, height: 640 },
   contact: { build: () => Contact(), width: 760, height: 470 },
+  // Le launchpad est un écran plein écran (pas une fenêtre déplaçable).
+  launchpad: { build: () => Launchpad(), fullscreen: true },
 };
 
 export function registerApp(name, build, width = 820, height = 520) {
@@ -126,7 +129,6 @@ function enableDragging(frame) {
   });
 }
 
-// Les 8 poignées de redimensionnement : position dans le cadre + direction.
 const resizeHandles = [
   {
     direction: "n",
@@ -261,7 +263,6 @@ function startResizing(event, frame, layer, direction) {
       top = startTop + deltaY;
     }
 
-    // On respecte la taille minimale (sans bouger le bord opposé).
     if (width < minWidth) {
       if (direction.includes("w")) left = startLeft + (startWidth - minWidth);
       width = minWidth;
@@ -318,7 +319,14 @@ export function openApp(name) {
 
   const alreadyOpen = layer.querySelector(`[data-window="${name}"]`);
   if (alreadyOpen) {
-    putOnTop(alreadyOpen.closest(".enzo-window-frame"));
+    putOnTop(alreadyOpen.closest(".enzo-window-frame") || alreadyOpen);
+    return;
+  }
+
+  if (app.fullscreen) {
+    const overlay = generateStructure(app.build());
+    layer.appendChild(overlay);
+    putOnTop(overlay);
     return;
   }
 

@@ -352,8 +352,27 @@ export function Contact() {
     name: "contact",
     trafficLights: false,
     className: ["enzo-sf", "w-[760px]", "max-w-[94vw]"],
-    bodyClass: ["flex", "items-stretch", "min-h-[440px]"],
+    bodyClass: ["relative", "flex", "items-stretch", "min-h-[440px]", "h-full"],
     children: [
+      {
+        type: "div",
+        attributes: [
+          [
+            "class",
+            [
+              "enzo-drag-handle",
+              "cursor-move",
+              "absolute",
+              "top-0",
+              "left-0",
+              "right-0",
+              "h-[46px]",
+              "z-20",
+            ],
+          ],
+        ],
+        children: [],
+      },
       {
         type: "aside",
         attributes: [
@@ -363,7 +382,17 @@ export function Contact() {
           {
             type: "div",
             attributes: [
-              ["class", ["flex", "items-center", "gap-[9px]", "py-[14px]"]],
+              [
+                "class",
+                [
+                  "relative",
+                  "z-30",
+                  "flex",
+                  "items-center",
+                  "gap-[9px]",
+                  "py-[14px]",
+                ],
+              ],
             ],
             children: [TrafficLights()],
           },

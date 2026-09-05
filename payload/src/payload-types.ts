@@ -75,6 +75,7 @@ export interface Config {
     projects: Project;
     contacts: Contact;
     profiles: Profile;
+    'axel-projects': AxelProject;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -100,6 +101,7 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
     profiles: ProfilesSelect<false> | ProfilesSelect<true>;
+    'axel-projects': AxelProjectsSelect<false> | AxelProjectsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -847,6 +849,35 @@ export interface Profile {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "axel-projects".
+ */
+export interface AxelProject {
+  id: number;
+  /**
+   * Donne le numéro affiché sur la carte : 1 → 001, 2 → 002…
+   */
+  order: number;
+  title: string;
+  /**
+   * La carte fait 6 lignes environ. Au-delà, ça déborde.
+   */
+  shortDescription: string;
+  longDescription?: string | null;
+  images?: (number | Media)[] | null;
+  stack?:
+    | {
+        name: string;
+        logo: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  liveUrl?: string | null;
+  year?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1066,6 +1097,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'profiles';
         value: number | Profile;
+      } | null)
+    | ({
+        relationTo: 'axel-projects';
+        value: number | AxelProject;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1481,6 +1516,28 @@ export interface ProfilesSelect<T extends boolean = true> {
   email?: T;
   phone?: T;
   location?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "axel-projects_select".
+ */
+export interface AxelProjectsSelect<T extends boolean = true> {
+  order?: T;
+  title?: T;
+  shortDescription?: T;
+  longDescription?: T;
+  images?: T;
+  stack?:
+    | T
+    | {
+        name?: T;
+        logo?: T;
+        id?: T;
+      };
+  liveUrl?: T;
+  year?: T;
   updatedAt?: T;
   createdAt?: T;
 }

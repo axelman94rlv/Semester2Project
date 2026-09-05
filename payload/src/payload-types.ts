@@ -74,6 +74,7 @@ export interface Config {
     users: User;
     projects: Project;
     contacts: Contact;
+    profiles: Profile;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -98,6 +99,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
+    profiles: ProfilesSelect<false> | ProfilesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -825,6 +827,26 @@ export interface Contact {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profiles".
+ */
+export interface Profile {
+  id: number;
+  name: string;
+  role?: string | null;
+  description?: string | null;
+  avatar?: (number | null) | Media;
+  githubUrl?: string | null;
+  linkedin?: string | null;
+  linkedinUrl?: string | null;
+  cv?: (number | null) | Media;
+  email?: string | null;
+  phone?: string | null;
+  location?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1040,6 +1062,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contacts';
         value: number | Contact;
+      } | null)
+    | ({
+        relationTo: 'profiles';
+        value: number | Profile;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1436,6 +1462,25 @@ export interface ContactsSelect<T extends boolean = true> {
   email?: T;
   company?: T;
   message?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profiles_select".
+ */
+export interface ProfilesSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  description?: T;
+  avatar?: T;
+  githubUrl?: T;
+  linkedin?: T;
+  linkedinUrl?: T;
+  cv?: T;
+  email?: T;
+  phone?: T;
+  location?: T;
   updatedAt?: T;
   createdAt?: T;
 }

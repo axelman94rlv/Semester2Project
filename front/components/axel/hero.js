@@ -1,23 +1,36 @@
 import Sun from "../../lib/img/axel/sun.svg";
 import City from "../../lib/img/axel/city.svg";
 import HexUnite from "../../lib/img/axel/hexagone_unite.svg";
-import HexBreak from "../../lib/img/axel/hexagone_break.svg";
 import Portrait from "../../lib/img/axel/profil.png";
+
+import generateStructure from "../../lib/generate-structure.js";
+import ProfileCard, { closeProfileCard } from "./components/profilecard.js";
 
 // --- Hero : parallaxe pilotée par le scroll --------------------------------
 // Le soleil descend, franchit la ligne d'horizon (div violette = couleur du
 // fond) dont le raccord est planqué derrière les hexagones -> il disparait.
-// Pile à ce moment les hexagones cassent (unite -> break) et le portrait sort
-// juste en dessous, se fige un instant, puis repart avec la page.
+// Le portrait glisse ensuite de derrière cette ligne jusqu'à sa place, s'y
+// fige un instant, puis repart avec la page.
 // Aucune opacité, tout est réversible (remonter = rembobiner).
 
 // Réglages (en fraction de hauteur d'écran) -----------------------------------
-const RUN = 1.5; // longueur de scroll de l'animation (en écrans)
-const SUN_TRAVEL = 1.6; // distance de descente totale du soleil
-const BAND = 0.72; // descente du soleil à laquelle il entre dans les hexagones
-const EMERGE = 0.5; // de combien le portrait ressort sous les hexagones
-const DWELL = 0.6; // écrans de scroll où le portrait reste figé avant de repartir
-const CITY_PARALLAX = 0.55; // 0 = fixe, 1 = suit le scroll
+const RUN = 0.6; // longueur de scroll de l'animation (en écrans)
+const SUN_TRAVEL = 1.2; // distance de descente totale du soleil
+// Portrait : timeline propre, indépendante du soleil -------------------------
+const PORTRAIT_START = 0.5; // écrans de scroll avant qu'il commence à sortir
+const PORTRAIT_SLIDE = 0.55; // écrans de scroll que dure la descente
+const PORTRAIT_RISE = 0.55; // de combien il part au-dessus de sa place
+const PORTRAIT_Y = 0.6; // où il se pose (fraction d'écran)
+const DWELL = 0.6; // écrans de scroll où il reste figé avant de repartir
+const CITY_PARALLAX = 0.6; // 0 = fixe, 1 = suit le scroll
+
+// Fiche profil (clic sur le portrait) ----------------------------------------
+const CARD_SHIFT = "14rem"; // recul du portrait, fiche fermée
+const CARD_SHIFT_OPEN = "27rem"; // recul du portrait, fiche dépliée
+const CARD_GAP = "2rem"; // espace entre le portrait et la fiche
+
+let cardShown = false;
+let cardMounted = false;
 
 let heroAnimSetup = false;
 let rafId = null;
@@ -34,18 +47,8 @@ function updateHero() {
   const celestial = scene.querySelector("[data-celestial]");
   const horizon = scene.querySelector("[data-horizon]");
   const cityscape = scene.querySelector("[data-cityscape]");
-  const hexUnite = scene.querySelector("[data-hexunite]");
-  const hexBreak = scene.querySelector("[data-hexbreak]");
   const portrait = document.querySelector("[data-portrait]");
-  if (
-    !celestial ||
-    !horizon ||
-    !cityscape ||
-    !hexUnite ||
-    !hexBreak ||
-    !portrait
-  )
-    return;
+  if (!celestial || !horizon || !cityscape || !portrait) return;
 
   const vh = window.innerHeight;
   const rect = section.getBoundingClientRect();
@@ -63,25 +66,54 @@ function updateHero() {
   cityscape.style.transform = slow;
   horizon.style.transform = slow;
 
-  // hexagones : cassure NETTE dès que le soleil entre dedans (aucune opacité)
-  const bandY = vh * BAND;
-  hexUnite.hidden = sunY >= bandY;
-  hexBreak.hidden = sunY < bandY;
+  // portrait : glisse de derrière la ligne d'horizon jusqu'à sa place, s'y
+  // fige un instant, puis repart avec la page.
+  const slide = clamp(
+    (scrolled - vh * PORTRAIT_START) / (vh * PORTRAIT_SLIDE),
+    0,
+    1,
+  );
+  portrait.hidden = slide <= 0;
 
-  // portrait : sort juste sous les hexagones, se fige, puis repart avec la page
-  const emergeMax = vh * EMERGE;
-  const rawEmerge = sunY - bandY;
-  const emerge = clamp(rawEmerge, 0, emergeMax);
-  portrait.hidden = rawEmerge <= 0;
+  const lock = vh * (PORTRAIT_START + PORTRAIT_SLIDE + DWELL);
+  const past = Math.max(0, scrolled - lock);
 
-  const sLock = ((bandY + emergeMax) / (vh * SUN_TRAVEL)) * run;
-  const past = Math.max(0, scrolled - sLock - vh * DWELL);
-  portrait.style.transform = `translate(-50%, -50%) translateY(${emerge - past}px)`;
+  // Le portrait vit DANS l'horizon (pour être rogné par la ligne), mais on le
+  // veut positionné par rapport à l'écran : on retranche la position écran du
+  // haut de l'horizon, qui défile en parallaxe.
+  const horizonTop = rect.top + vh + s * CITY_PARALLAX;
+  const centerY = vh * (PORTRAIT_Y - PORTRAIT_RISE * (1 - slide)) - past;
+  portrait.style.transform = `translate(-50%, -50%) translateY(${centerY - horizonTop}px)`;
 }
 
 function onScroll() {
   if (rafId !== null) return;
   rafId = requestAnimationFrame(updateHero);
+}
+
+// --- fiche profil : affichage/masquage au clic sur le portrait --------------
+async function toggleProfileCard() {
+  const dock = document.querySelector("[data-portraitdock]");
+  const slot = document.querySelector("[data-cardslot]");
+  if (!dock || !slot) return;
+
+  // le hero ne possède que le recul du portrait ; la fiche gère son propre
+  // dépliement et nous rappelle via onToggle pour qu'on ajuste ce recul.
+  const shift = (open) => {
+    dock.style.transform = `translateX(-${open ? CARD_SHIFT_OPEN : CARD_SHIFT})`;
+  };
+
+  if (!cardMounted) {
+    cardMounted = true;
+    slot.appendChild(generateStructure(await ProfileCard({ onToggle: shift })));
+  }
+
+  cardShown = !cardShown;
+  if (!cardShown) closeProfileCard(); // on masque toujours en état replié
+
+  dock.style.transform = cardShown ? `translateX(-${CARD_SHIFT})` : "";
+  slot.style.opacity = cardShown ? "1" : "0";
+  slot.style.pointerEvents = cardShown ? "auto" : "none";
 }
 
 function setupHeroAnim() {
@@ -106,7 +138,10 @@ export default function HeroPart() {
     type: "section",
     attributes: [
       ["id", "hero"],
-      ["class", ["relative", "h-[400vh]", "overflow-hidden", "bg-[#3d0066]"]],
+      [
+        "class",
+        ["relative", "z-0", "h-[300vh]", "overflow-hidden", "bg-[#3d0066]"],
+      ],
     ],
     children: [
       {
@@ -158,7 +193,9 @@ export default function HeroPart() {
             ],
           },
 
-          // 2. ligne d'horizon : plan violet qui masque le soleil en bas
+          // 2. ligne d'horizon : plan violet qui masque le soleil en bas.
+          //    Il héberge aussi le portrait : overflow-hidden → tout ce qui
+          //    remonte au-dessus de la ligne est rogné par elle.
           {
             type: "div",
             attributes: [
@@ -173,9 +210,98 @@ export default function HeroPart() {
                   "h-[300vh]",
                   "z-[15]",
                   "bg-[#3d0066]",
+                  "overflow-hidden",
                   "will-change-transform",
                 ],
               ],
+            ],
+            children: [
+              // portrait : enfant de l'horizon → rogné par la ligne, et derrière
+              // les hexagones (z-20). Position écran recalculée à chaque frame.
+              // [data-portrait]     : porte la transform du SCROLL (rAF)
+              // [data-portraitdock] : porte le décalage du CLIC (transition)
+              {
+                type: "div",
+                attributes: [
+                  ["data-portrait", "true"],
+                  ["hidden", "true"],
+                  [
+                    "class",
+                    ["absolute", "left-1/2", "top-0", "will-change-transform"],
+                  ],
+                ],
+                children: [
+                  {
+                    type: "div",
+                    attributes: [
+                      ["data-portraitdock", "true"],
+                      [
+                        "class",
+                        [
+                          "relative",
+                          "transition-transform",
+                          "duration-500",
+                          "ease-out",
+                        ],
+                      ],
+                    ],
+                    children: [
+                      // le portrait rond (cliquable)
+                      {
+                        type: "div",
+                        attributes: [
+                          [
+                            "class",
+                            [
+                              "w-[60vh]",
+                              "h-[60vh]",
+                              "rounded-full",
+                              "overflow-hidden",
+                              "cursor-pointer",
+                            ],
+                          ],
+                        ],
+                        events: [["click", toggleProfileCard]],
+                        children: [
+                          {
+                            type: "img",
+                            attributes: [
+                              ["src", Portrait],
+                              ["alt", "Axel Barbellion"],
+                              [
+                                "class",
+                                ["block", "w-full", "h-full", "object-cover"],
+                              ],
+                            ],
+                          },
+                        ],
+                      },
+
+                      // la fiche : collée à droite du portrait, remplie au 1er clic
+                      {
+                        type: "div",
+                        attributes: [
+                          ["data-cardslot", "true"],
+                          [
+                            "class",
+                            [
+                              "absolute",
+                              "left-full",
+                              "top-1/2",
+                              "-translate-y-1/2",
+                              "opacity-0",
+                              "pointer-events-none",
+                              "transition-opacity",
+                              "duration-500",
+                            ],
+                          ],
+                          ["style", [["marginLeft", CARD_GAP]]],
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
 
@@ -206,71 +332,16 @@ export default function HeroPart() {
                 ],
               },
               {
-                type: "div",
+                type: "img",
                 attributes: [
-                  ["class", ["relative", "z-30", "w-full", "-mt-[15vh]"]],
-                ],
-                children: [
-                  {
-                    type: "img",
-                    attributes: [
-                      ["src", HexUnite],
-                      ["alt", ""],
-                      ["data-hexunite", "true"],
-                      ["class", ["block", "w-full"]],
-                    ],
-                  },
-                  {
-                    type: "img",
-                    attributes: [
-                      ["src", HexBreak],
-                      ["alt", ""],
-                      ["data-hexbreak", "true"],
-                      ["hidden", "true"],
-                      [
-                        "class",
-                        ["absolute", "left-0", "top-0", "block", "w-full"],
-                      ],
-                    ],
-                  },
+                  ["src", HexUnite],
+                  ["alt", ""],
+                  [
+                    "class",
+                    ["relative", "z-30", "block", "w-full", "-mt-[15vh]"],
+                  ],
                 ],
               },
-            ],
-          },
-        ],
-      },
-
-      // portrait : fixe, au-dessus du plan violet (z-16) mais derrière les
-      // hexagones (z-20) → il traverse la bande puis se pose en dessous
-      {
-        type: "div",
-        attributes: [
-          ["data-portrait", "true"],
-          ["hidden", "true"],
-          [
-            "class",
-            [
-              "fixed",
-              "left-1/2",
-              "top-[60vh]",
-              "z-[16]",
-              "w-[60vh]",
-              "h-[60vh]",
-              "rounded-full",
-              "overflow-hidden",
-              "cursor-pointer",
-              "will-change-transform",
-            ],
-          ],
-        ],
-        events: [["click", () => console.log("portrait cliqué")]],
-        children: [
-          {
-            type: "img",
-            attributes: [
-              ["src", Portrait],
-              ["alt", "Axel Barbellion"],
-              ["class", ["block", "w-full", "h-full", "object-cover"]],
             ],
           },
         ],

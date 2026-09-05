@@ -2,7 +2,7 @@ import Link from "../../router/link.js";
 import Logo from "../../../lib/img/axel/logo_unicolor.svg";
 
 const NAV_LINKS = [
-  ["#contact", "Contact"],
+  ["#profil", "Profil"],
   ["#a-propos", "A propos"],
   ["#projets", "Projets"],
   ["#stack", "Stack"],

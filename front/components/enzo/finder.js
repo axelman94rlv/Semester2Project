@@ -367,7 +367,10 @@ export function Finder({ projects = PROJECTS, className = [] } = {}) {
       {
         type: "div",
         attributes: [
-          ["class", ["flex", "items-center", "px-[13px]", "py-[12px]"]],
+          [
+            "class",
+            ["enzo-drag-handle", "cursor-move", "flex", "items-center", "px-[13px]", "py-[12px]"],
+          ],
         ],
         children: [TrafficLights()],
       },
@@ -377,7 +380,7 @@ export function Finder({ projects = PROJECTS, className = [] } = {}) {
         attributes: [
           [
             "class",
-            ["flex", "items-stretch", "gap-[10px]", "px-[10px]", "pb-[12px]"],
+            ["flex", "items-stretch", "gap-[10px]", "px-[10px]", "pb-[12px]", "flex-1", "min-h-0"],
           ],
         ],
         children: [

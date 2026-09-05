@@ -139,6 +139,8 @@ export function Mail() {
           [
             "class",
             [
+              "enzo-drag-handle",
+              "cursor-move",
               "flex",
               "items-center",
               "justify-between",

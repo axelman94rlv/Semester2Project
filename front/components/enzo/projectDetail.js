@@ -136,7 +136,7 @@ function buildPreview(project) {
 let payloadProjectsCache = null;
 async function fetchPayloadProjects() {
   if (payloadProjectsCache) return payloadProjectsCache;
-  const data = await getCollection("projects?depth=2");
+  const data = await getCollection("enzo-projects?depth=2");
   payloadProjectsCache = data?.docs ?? [];
   return payloadProjectsCache;
 }
@@ -148,40 +148,56 @@ function mediaUrl(image) {
   return url.startsWith("http") ? url : PAYLOAD_ORIGIN + url;
 }
 
-export async function loadProjectImages(key) {
+export async function loadProjectDetails(key) {
   const project = projects.find((p) => p.key === key);
   if (!project) return;
 
-  let urls = [];
+  let doc = null;
   try {
     const docs = await fetchPayloadProjects();
     const normalize = (s) => (s || "").toLowerCase().trim();
-    const doc = docs.find(
-      (d) => normalize(d.title) === normalize(project.title),
-    );
-    if (doc && Array.isArray(doc.images)) {
-      urls = doc.images.map((item) => mediaUrl(item.image)).filter(Boolean);
-    }
+    doc = docs.find((d) => normalize(d.title) === normalize(project.title));
   } catch (error) {
-    console.error(
-      "Payload : impossible de charger les images du projet",
-      error,
-    );
+    console.error("Payload : impossible de charger le projet", error);
+  }
+  if (!doc) return;
+
+  const win = document.querySelector(`[data-window="project-${key}"]`);
+  if (!win) return;
+
+  const urls = Array.isArray(doc.images)
+    ? doc.images.map((item) => mediaUrl(item.image)).filter(Boolean)
+    : [];
+  if (urls.length > 0) {
+    project.previews = urls;
+    const gallery = win.querySelector(".enzo-project-gallery");
+    if (gallery) {
+      gallery.classList.remove("justify-center");
+      gallery.innerHTML = "";
+      for (const src of urls) {
+        gallery.appendChild(generateStructure(galleryImage(src, project.title)));
+      }
+    }
   }
 
-  if (urls.length === 0) return;
+  const subtitle = win.querySelector(".enzo-project-subtitle");
+  if (subtitle) {
+    const parts = [doc.lieu, doc.year].filter(Boolean);
+    if (parts.length > 0) subtitle.textContent = parts.join(" · ");
+  }
 
-  project.previews = urls;
+  const desc = win.querySelector(".enzo-project-desc");
+  if (desc && doc.description) desc.textContent = doc.description;
 
-  const gallery = document.querySelector(
-    `[data-window="project-${key}"] .enzo-project-gallery`,
-  );
-  if (!gallery) return;
-
-  gallery.classList.remove("justify-center");
-  gallery.innerHTML = "";
-  for (const src of urls) {
-    gallery.appendChild(generateStructure(galleryImage(src, project.title)));
+  const stackNames = Array.isArray(doc.stack)
+    ? doc.stack.map((s) => s.name).filter(Boolean)
+    : [];
+  const stackWrap = win.querySelector(".enzo-project-stack");
+  if (stackWrap && stackNames.length > 0) {
+    stackWrap.innerHTML = "";
+    for (const name of stackNames) {
+      stackWrap.appendChild(generateStructure(stackTag(name)));
+    }
   }
 }
 
@@ -290,7 +306,12 @@ export function ProjectDetail(project) {
                   },
                   {
                     type: "p",
-                    attributes: [["class", ["text-[13px]", "text-black/50"]]],
+                    attributes: [
+                      [
+                        "class",
+                        ["enzo-project-subtitle", "text-[13px]", "text-black/50"],
+                      ],
+                    ],
                     children: [project.client + " · " + project.year],
                   },
                 ],
@@ -299,7 +320,15 @@ export function ProjectDetail(project) {
               {
                 type: "p",
                 attributes: [
-                  ["class", ["text-[14px]", "leading-[1.7]", "text-black/70"]],
+                  [
+                    "class",
+                    [
+                      "enzo-project-desc",
+                      "text-[14px]",
+                      "leading-[1.7]",
+                      "text-black/70",
+                    ],
+                  ],
                 ],
                 children: [project.description],
               },
@@ -328,7 +357,12 @@ export function ProjectDetail(project) {
                   },
                   {
                     type: "div",
-                    attributes: [["class", ["flex", "flex-wrap", "gap-[8px]"]]],
+                    attributes: [
+                      [
+                        "class",
+                        ["enzo-project-stack", "flex", "flex-wrap", "gap-[8px]"],
+                      ],
+                    ],
                     children: project.stack.map(stackTag),
                   },
                 ],

@@ -74,6 +74,7 @@ export interface Config {
     users: User;
     projects: Project;
     contacts: Contact;
+    'enzo-projects': EnzoProject;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -98,6 +99,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
+    'enzo-projects': EnzoProjectsSelect<false> | EnzoProjectsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -825,6 +827,31 @@ export interface Contact {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enzo-projects".
+ */
+export interface EnzoProject {
+  id: number;
+  title: string;
+  year?: number | null;
+  lieu?: string | null;
+  description?: string | null;
+  stack?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  images?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1040,6 +1067,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contacts';
         value: number | Contact;
+      } | null)
+    | ({
+        relationTo: 'enzo-projects';
+        value: number | EnzoProject;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1436,6 +1467,30 @@ export interface ContactsSelect<T extends boolean = true> {
   email?: T;
   company?: T;
   message?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enzo-projects_select".
+ */
+export interface EnzoProjectsSelect<T extends boolean = true> {
+  title?: T;
+  year?: T;
+  lieu?: T;
+  description?: T;
+  stack?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

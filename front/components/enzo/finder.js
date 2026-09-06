@@ -140,13 +140,13 @@ function SidebarLabel(text) {
 }
 
 function ListHeader() {
-  const cell = ["text-[11px]", "leading-[14px]"];
+  const cell = ["text-[13px]", "leading-[16px]"];
   return {
     type: "div",
     attributes: [
       [
         "class",
-        ["flex", "items-center", "h-[28px]", "border-b", "border-black/5"],
+        ["flex", "items-center", "h-[34px]", "border-b", "border-black/5"],
       ],
     ],
     children: [
@@ -161,7 +161,7 @@ function ListHeader() {
               "flex",
               "items-center",
               "gap-[6px]",
-              "pl-[48px]",
+              "pl-[68px]",
               "pr-[6px]",
             ],
           ],
@@ -192,7 +192,7 @@ function ListHeader() {
               "shrink-0",
               "flex",
               "items-center",
-              "h-[16px]",
+              "h-[20px]",
               "pl-[8px]",
               "border-l",
               "border-black/10",
@@ -232,13 +232,13 @@ function openProjectWindow(event) {
   import("./windowManager.js")
     .then((m) => m.openApp("project-" + key))
     .then(() => import("./projectDetail.js"))
-    .then((m) => m.loadProjectImages(key));
+    .then((m) => m.loadProjectDetails(key));
 }
 
 function ProjectRow(project) {
   const secondary = [
-    "text-[13px]",
-    "leading-[16px]",
+    "text-[16px]",
+    "leading-[20px]",
     "text-black/50",
     "truncate",
     "block",
@@ -256,8 +256,8 @@ function ProjectRow(project) {
           "w-full",
           "flex",
           "items-center",
-          "h-[24px]",
-          "rounded-[6px]",
+          "h-[40px]",
+          "rounded-[8px]",
           "transition-colors",
           "cursor-pointer",
           "hover:bg-[#2479ff]/10",
@@ -277,8 +277,8 @@ function ProjectRow(project) {
               "min-w-0",
               "flex",
               "items-center",
-              "gap-[4px]",
-              "pl-[10px]",
+              "gap-[8px]",
+              "pl-[14px]",
               "pr-[8px]",
             ],
           ],
@@ -289,7 +289,7 @@ function ProjectRow(project) {
             attributes: [
               ["src", chevronRight],
               ["alt", ""],
-              ["class", ["w-[6px]", "h-[9px]", "opacity-50", "shrink-0"]],
+              ["class", ["w-[9px]", "h-[13px]", "opacity-50", "shrink-0"]],
             ],
           },
           {
@@ -298,9 +298,9 @@ function ProjectRow(project) {
               [
                 "class",
                 [
-                  "w-[18px]",
-                  "h-[18px]",
-                  "rounded-[3px]",
+                  "w-[30px]",
+                  "h-[30px]",
+                  "rounded-[5px]",
                   "overflow-hidden",
                   "shrink-0",
                   "bg-black/5",
@@ -323,7 +323,7 @@ function ProjectRow(project) {
             attributes: [
               [
                 "class",
-                ["text-[13px]", "leading-[16px]", "text-black/85", "truncate"],
+                ["text-[16px]", "leading-[20px]", "text-black/85", "truncate"],
               ],
             ],
             children: [project.name],

@@ -1,13 +1,10 @@
-// Bouton à bordure épaisse (cf. button.svg)
-// Repos : #C86BFA — Survol : #FFEE32 (bordure + texte + icône)
-
 const BASE = [
   "group",
   "inline-flex",
   "items-center",
   "justify-center",
   "gap-[0.75rem]",
-  "h-[3.375rem]", // 54px
+  "h-[3.375rem]",
   "px-[1.5rem]",
   "border-[4px]",
   "border-[#C86BFA]",
@@ -70,10 +67,7 @@ export default function Button(label, options = {}) {
   };
 }
 
-/** Icône colorée par CSS : masque + bg-current → suit la couleur du bouton */
 export function MaskedIcon(src, size = "1.4rem") {
-  // src peut être un data: URI (Vite inline les SVG < 4 ko) qui contient des
-  // apostrophes → url() DOIT être quoté, sinon le CSSOM rejette la règle.
   const url = `url("${src}")`;
 
   return {

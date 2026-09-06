@@ -2,19 +2,6 @@ import { MaskedIcon } from "./button.js";
 import Logo from "../../../lib/img/axel/logo_unicolor.svg";
 import Arrow from "../../../lib/img/axel/arrow.svg";
 
-// Carte projet du carrousel (proportions de card.svg, hauteur portée à 700).
-// Alimentée par la collection Payload `axel-projects`.
-
-// --- Rythme vertical --------------------------------------------------------
-// Le corps a une hauteur AUTOMATIQUE : c'est l'espaceur, sous lui, qui absorbe
-// le mou. Les écarts ci-dessous sont donc de vrais écarts — les augmenter
-// décale les blocs, ça ne rogne jamais le texte.
-//
-//   700 = 125 (bandeau) + GAP_TITLE + 36 (titre) + GAP_BODY + corps
-//       + [espaceur élastique, au moins GAP_BUTTON]
-//       + 54 (bouton) + GAP_LOGO + 57 (logo) + BOTTOM
-//
-// Il reste ~301px au corps, soit 9 lignes à 32px d'interligne.
 const CARD_W = "31.5rem"; // 504px
 const CARD_H = "43.75rem"; // 700px
 const HEADER_H = "6rem"; // 125px, relevé sur la maquette

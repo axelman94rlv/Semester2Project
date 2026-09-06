@@ -2,6 +2,7 @@ import { getProfile } from "../../../api/profiles.js";
 import { API_BASE_URL } from "../../../api/config.js";
 
 import Button, { IconButton, MaskedIcon } from "./button.js";
+import { toggleProfileCard, WIDTH_CLOSED } from "../logique/profilecard.js";
 
 import Logo from "../../../lib/img/axel/logo_color.svg";
 import Download from "../../../lib/img/axel/download.svg";
@@ -14,32 +15,9 @@ import Location from "../../../lib/img/axel/location.svg";
 const SERVER_URL = API_BASE_URL.replace(/\/api\/?$/, "");
 const mediaUrl = (file) => (file?.url ? `${SERVER_URL}${file.url}` : null);
 
-// Largeurs relevées sur les maquettes (bordure de 3px comprise) ---------------
-const WIDTH_CLOSED = "22.375rem"; // 358px
-const WIDTH_OPEN = "48.625rem"; // 778px
+// Squelette de la fiche profil. Le pli/dépli est dans
+// ../logique/profilecard.js.
 
-let cardOpen = false;
-
-/** Ouvre/ferme la fiche. Retourne le nouvel état. */
-export function toggleProfileCard() {
-  const body = document.querySelector("[data-cardbody]");
-  const panel = document.querySelector("[data-cardpanel]");
-  const chevron = document.querySelector("[data-cardchevron]");
-  if (!body || !panel) return cardOpen;
-
-  cardOpen = !cardOpen;
-  body.style.width = cardOpen ? WIDTH_OPEN : WIDTH_CLOSED;
-  panel.style.opacity = cardOpen ? "1" : "0";
-  if (chevron) chevron.style.transform = cardOpen ? "rotate(180deg)" : "";
-  return cardOpen;
-}
-
-/** Referme la fiche sans animation de bascule (utilisé quand on la masque). */
-export function closeProfileCard() {
-  if (cardOpen) toggleProfileCard();
-}
-
-/** Une ligne du panneau : icône jaune + libellé blanc. */
 function PanelRow(icon, label, href, iconSize) {
   const clickable = Boolean(href && label);
 
@@ -51,10 +29,10 @@ function PanelRow(icon, label, href, iconSize) {
         [
           "flex",
           "items-center",
-          "gap-[0.875rem]", // 14px
-          "h-[2.25rem]", // 36px → pas de 65px avec le gap-[1.8125rem]
+          "gap-[0.875rem]",
+          "h-[2.25rem]",
           "font-['AudiowideCustom']",
-          "text-[1.125rem]", // même corps que les boutons
+          "text-[1.125rem]",
           "leading-none",
           "text-white",
           ...(clickable
@@ -76,7 +54,7 @@ function PanelRow(icon, label, href, iconSize) {
             "class",
             [
               "flex",
-              "w-[2.25rem]", // boîte fixe : toutes les icônes sur le même axe
+              "w-[2.25rem]",
               "shrink-0",
               "items-center",
               "justify-center",
@@ -131,7 +109,7 @@ export default async function ProfileCard({ onToggle } = {}) {
             [
               "relative",
               "flex",
-              "rounded-[1.5rem]", // rx 24
+              "rounded-[1.5rem]",
               "border-[3px]",
               "border-[#C86BFA]",
               "bg-[#C86BFA]/[0.16]",
@@ -144,7 +122,7 @@ export default async function ProfileCard({ onToggle } = {}) {
           ["style", [["width", WIDTH_CLOSED]]],
         ],
         children: [
-          // -------- colonne gauche (identique aux deux maquettes) --------
+          // -------- colonne gauche --------
           {
             type: "div",
             attributes: [
@@ -152,9 +130,9 @@ export default async function ProfileCard({ onToggle } = {}) {
                 "class",
                 [
                   "relative",
-                  "w-[22rem]", // 352px + 6px de bordure = 358px
+                  "w-[22rem]",
                   "shrink-0",
-                  "bg-[#C86BFA]/[0.16]", // 2e couche → ~0.29 à gauche, 0.16 à droite
+                  "bg-[#C86BFA]/[0.16]",
                   "border-r",
                   "border-[#C86BFA]",
                 ],
@@ -162,7 +140,7 @@ export default async function ProfileCard({ onToggle } = {}) {
             ],
 
             children: [
-              // bande haute en dégradé + liseré
+              // bande haute en dégradé
               {
                 type: "div",
                 attributes: [
@@ -172,7 +150,7 @@ export default async function ProfileCard({ onToggle } = {}) {
                       "absolute",
                       "inset-x-0",
                       "top-0",
-                      "h-[5.875rem]", // ~94px
+                      "h-[5.875rem]",
                       "bg-gradient-to-br",
                       "from-[#C86BFA]/10",
                       "to-black/60",
@@ -201,7 +179,7 @@ export default async function ProfileCard({ onToggle } = {}) {
                   ],
                 ],
                 children: [
-                  // logo (à cheval sur la ligne, comme sur la maquette)
+                  // logo
                   {
                     type: "img",
                     attributes: [
@@ -281,7 +259,7 @@ export default async function ProfileCard({ onToggle } = {}) {
             ],
           },
 
-          // -------- colonne droite : découverte par l'élargissement --------
+          // -------- colonne droite --------
           {
             type: "div",
             attributes: [
@@ -289,13 +267,13 @@ export default async function ProfileCard({ onToggle } = {}) {
               [
                 "class",
                 [
-                  "w-[26.25rem]", // 420px
+                  "w-[26.25rem]",
                   "shrink-0",
-                  "pl-[2.875rem]", // 46px → icône centrée à 416px du bord
-                  "pt-[5.75rem]", // 92px → 1re ligne centrée à 112,8px
+                  "pl-[2.875rem]",
+                  "pt-[5.75rem]",
                   "flex",
                   "flex-col",
-                  "gap-[1.8125rem]", // 29px + 36px de ligne = pas de 65px
+                  "gap-[1.8125rem]",
                   "opacity-0",
                   "transition-opacity",
                   "duration-300",

@@ -9,32 +9,24 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
-import { Contacts } from "./collections/Contacts";
+import { Contacts } from './collections/Contacts'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { Projects } from './collections/Projects'
-
+import { Profiles } from './collections/Profiles'
+import { AxelProjects } from './collections/AxelProjects'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-
   serverURL: 'http://localhost:3000',
 
-  cors: [
-    'http://127.0.0.1:3001',   
-    'http://localhost:3001',
-    "http://localhost:5173",   
-  ],
+  cors: ['http://127.0.0.1:3001', 'http://localhost:3001', 'http://localhost:5173'],
 
-  csrf : [
-    'http://127.0.0.1:3001',
-    'http://localhost:3001',
-    "http://localhost:5173",
-  ],
+  csrf: ['http://127.0.0.1:3001', 'http://localhost:3001', 'http://localhost:5173'],
 
   admin: {
     components: {
@@ -80,7 +72,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts],
+  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts, Profiles, AxelProjects],
   globals: [Header, Footer],
   plugins,
   secret: process.env.PAYLOAD_SECRET,

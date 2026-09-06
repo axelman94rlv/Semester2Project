@@ -8,84 +8,94 @@ import stravaIcon from "../../../lib/img/enzo/dock-strava.svg";
 import { openApp } from "../windowManager.js";
 import { API_BASE_URL } from "../../../api/config.js";
 
-const GITHUB_DEFAULT = "https://github.com";
-const LINKEDIN_DEFAULT = "https://www.linkedin.com/in/enzo-moita-a8479424a/";
-const STRAVA_DEFAULT = "https://www.strava.com/athletes/116644708";
+let linksCache = null;
+let linksPromise = null;
 
 async function fetchLinks() {
   try {
-    const response = await fetch(
-      API_BASE_URL + "/globals/links-enzo?t=" + Date.now(),
-    );
+    const response = await Promise.race([
+      fetch(API_BASE_URL + "/globals/links-enzo?t=" + Date.now()),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 5000),
+      ),
+    ]);
     if (!response.ok) return {};
     return await response.json();
-  } catch (error) {
-    console.error("Payload : impossible de charger les liens", error);
+  } catch {
     return {};
   }
 }
 
-function DockIcon({ src, alt, app = null, href = null, onClick = null }) {
-  if (app && !href && !onClick) {
+function loadLinks() {
+  if (!linksPromise) {
+    linksPromise = fetchLinks().then((links) => {
+      linksCache = links;
+      return links;
+    });
+  }
+  return linksPromise;
+}
+
+function openSocial(key) {
+  const open = (links) => {
+    const url = links && links[key];
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  };
+  if (linksCache) {
+    open(linksCache);
+  } else {
+    loadLinks().then(open);
+  }
+}
+
+loadLinks();
+
+function DockIcon({ src, alt, app = null, onClick = null }) {
+  if (app && !onClick) {
     onClick = () => openApp(app);
   }
-
-  const iconClasses = [
-    "block",
-    "w-[45px]",
-    "h-[45px]",
-    "object-contain",
-    "origin-bottom",
-    "transition-transform",
-    "duration-150",
-    "ease-out",
-    "hover:scale-[1.35]",
-    "hover:-translate-y-[10px]",
-  ];
 
   const image = {
     type: "img",
     attributes: [
       ["src", src],
       ["alt", alt],
-      ["class", iconClasses],
+      [
+        "class",
+        [
+          "block",
+          "w-[60px]",
+          "h-[60px]",
+          "object-contain",
+          "origin-bottom",
+          "transition-transform",
+          "duration-150",
+          "ease-out",
+          "hover:scale-[1.35]",
+          "hover:-translate-y-[12px]",
+        ],
+      ],
     ],
   };
-
-  const attributes = [
-    ["class", ["shrink-0", "cursor-pointer"]],
-    ["title", alt],
-  ];
-
-  if (app) attributes.push(["data-app", app]);
 
   const events = [];
   if (onClick) events.push(["click", onClick]);
 
-  if (href) {
-    return {
-      type: "a",
-      attributes: [
-        ...attributes,
-        ["href", href],
-        ["target", "_blank"],
-        ["rel", "noopener noreferrer"],
-      ],
-      events,
-      children: [image],
-    };
-  }
-
   return {
     type: "button",
-    attributes: [...attributes, ["type", "button"]],
+    attributes: [
+      ["type", "button"],
+      ["title", alt],
+      ["aria-label", alt],
+      ["class", ["shrink-0", "cursor-pointer"]],
+      ...(app ? [["data-app", app]] : []),
+    ],
     events,
     children: [image],
   };
 }
 
-export async function Dock() {
-  const links = await fetchLinks();
+export function Dock() {
   return {
     type: "nav",
     attributes: [
@@ -96,14 +106,14 @@ export async function Dock() {
           "fixed",
           "left-1/2",
           "-translate-x-1/2",
-          "bottom-[10px]",
+          "bottom-[12px]",
           "z-40",
           "flex",
           "items-end",
-          "gap-[9px]",
-          "px-[8px]",
-          "py-[8px]",
-          "rounded-[18px]",
+          "gap-[12px]",
+          "px-[12px]",
+          "py-[10px]",
+          "rounded-[24px]",
           "border",
           "border-[rgba(217,217,217,0.36)]",
           "bg-white/10",
@@ -120,17 +130,17 @@ export async function Dock() {
       DockIcon({
         src: githubIcon,
         alt: "GitHub",
-        href: links.github || GITHUB_DEFAULT,
+        onClick: () => openSocial("github"),
       }),
       DockIcon({
         src: linkedinIcon,
         alt: "LinkedIn",
-        href: links.linkedin || LINKEDIN_DEFAULT,
+        onClick: () => openSocial("linkedin"),
       }),
       DockIcon({
         src: stravaIcon,
         alt: "Strava",
-        href: links.strava || STRAVA_DEFAULT,
+        onClick: () => openSocial("strava"),
       }),
     ],
   };

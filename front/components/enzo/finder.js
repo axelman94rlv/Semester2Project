@@ -359,6 +359,7 @@ export async function Finder({ className = [] } = {}) {
 
   return Window({
     name: "finder",
+    title: "Finder",
     trafficLights: false,
     className: [
       "enzo-sf",

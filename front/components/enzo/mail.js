@@ -141,6 +141,10 @@ function FieldRow(label, { name, type = "text", placeholder = "" }) {
               "bg-transparent",
               "border-0",
               "outline-none",
+              "rounded-[6px]",
+              "focus-visible:ring-2",
+              "focus-visible:ring-[#007aff]",
+              "focus-visible:ring-inset",
               "text-[14px]",
               "text-black/85",
               "placeholder:text-black/30",
@@ -155,6 +159,7 @@ function FieldRow(label, { name, type = "text", placeholder = "" }) {
 export function Mail() {
   return Window({
     name: "mail",
+    title: "Me contacter",
     trafficLights: false,
     className: ["enzo-sf", "w-[720px]", "max-w-[92vw]", "flex", "flex-col"],
     bodyClass: ["flex", "flex-col", "h-full"],
@@ -266,6 +271,9 @@ export function Mail() {
               "bg-transparent",
               "border-0",
               "outline-none",
+              "focus-visible:ring-2",
+              "focus-visible:ring-[#007aff]",
+              "focus-visible:ring-inset",
               "px-[16px]",
               "py-[14px]",
               "text-[14px]",

@@ -66,6 +66,7 @@ export function TrafficLights() {
 
 export default function Window({
   name = "window",
+  title = "",
   children = [],
   className = [],
   bodyClass = [],
@@ -76,6 +77,8 @@ export default function Window({
     type: "div",
     attributes: [
       ["data-window", name],
+      ["role", "dialog"],
+      ["aria-label", title || name],
       [
         "class",
         [

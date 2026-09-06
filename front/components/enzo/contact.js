@@ -59,31 +59,45 @@ function selectTab(event) {
 }
 
 function ListItem(label, { selected = false, tab = null } = {}) {
-  const attributes = [
-    [
-      "class",
-      [
-        "w-full",
-        "px-[12px]",
-        "py-[4px]",
-        "rounded-[5px]",
-        "text-[12px]",
-        "leading-[18px]",
-        "font-medium",
-        "text-black",
-        "whitespace-nowrap",
-        selected ? "bg-black/10" : "hover:bg-black/5",
-        "transition-colors",
-        tab ? "cursor-pointer" : "cursor-default",
-      ],
-    ],
+  const classes = [
+    "w-full",
+    "px-[12px]",
+    "py-[4px]",
+    "rounded-[5px]",
+    "text-[12px]",
+    "leading-[18px]",
+    "font-medium",
+    "text-black",
+    "whitespace-nowrap",
+    "text-left",
+    selected ? "bg-black/10" : "hover:bg-black/5",
+    "transition-colors",
+    tab ? "cursor-pointer" : "cursor-default",
   ];
-  const events = [];
+
   if (tab) {
-    attributes.push(["data-tab", tab]);
-    events.push(["click", selectTab]);
+    return {
+      type: "button",
+      attributes: [
+        ["type", "button"],
+        ["data-tab", tab],
+        [
+          "class",
+          [
+            ...classes,
+            "focus-visible:ring-2",
+            "focus-visible:ring-[#2479ff]",
+            "focus-visible:ring-inset",
+            "focus-visible:outline-none",
+          ],
+        ],
+      ],
+      events: [["click", selectTab]],
+      children: [label],
+    };
   }
-  return { type: "div", attributes, events, children: [label] };
+
+  return { type: "div", attributes: [["class", classes]], children: [label] };
 }
 
 function RoundButton({ icon, alt, href = null, onClick = null }) {
@@ -350,6 +364,7 @@ function detailFor(tab) {
 export function Contact() {
   return Window({
     name: "contact",
+    title: "Contacts",
     trafficLights: false,
     className: ["enzo-sf", "w-[760px]", "max-w-[94vw]"],
     bodyClass: ["relative", "flex", "items-stretch", "min-h-[440px]", "h-full"],

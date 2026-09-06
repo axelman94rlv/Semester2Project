@@ -31,9 +31,12 @@ function normalizeProject(doc) {
 
 export async function fetchEnzoProjects() {
   try {
-    const data = await getCollection(
-      "enzo-projects?depth=2&limit=100&t=" + Date.now(),
-    );
+    const data = await Promise.race([
+      getCollection("enzo-projects?depth=2&limit=100&t=" + Date.now()),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 4000),
+      ),
+    ]);
     return (data?.docs ?? []).map(normalizeProject);
   } catch (error) {
     console.error("Payload : impossible de charger les projets", error);
@@ -122,6 +125,7 @@ export function ProjectDetail(project) {
 
   return Window({
     name: "project-" + project.id,
+    title: project.title,
     trafficLights: false,
     className: ["enzo-sf"],
     bodyClass: ["flex", "flex-col", "h-full"],

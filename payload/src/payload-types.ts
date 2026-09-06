@@ -74,9 +74,6 @@ export interface Config {
     users: User;
     projects: Project;
     contacts: Contact;
-    'enzo-projects': EnzoProject;
-    'enzo-contacts': EnzoContact;
-    'axel-projects': AxelProject;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -101,9 +98,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
-    'enzo-projects': EnzoProjectsSelect<false> | EnzoProjectsSelect<true>;
-    'enzo-contacts': EnzoContactsSelect<false> | EnzoContactsSelect<true>;
-    'axel-projects': AxelProjectsSelect<false> | AxelProjectsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -122,12 +116,10 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
-    'links-enzo': LinksEnzo;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
-    'links-enzo': LinksEnzoSelect<false> | LinksEnzoSelect<true>;
   };
   locale: null;
   widgets: {
@@ -833,74 +825,6 @@ export interface Contact {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enzo-projects".
- */
-export interface EnzoProject {
-  id: number;
-  title: string;
-  year?: number | null;
-  lieu?: string | null;
-  logo?: (number | null) | Media;
-  description?: string | null;
-  stack?:
-    | {
-        name: string;
-        id?: string | null;
-      }[]
-    | null;
-  images?:
-    | {
-        image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enzo-contacts".
- */
-export interface EnzoContact {
-  id: number;
-  nom: string;
-  entreprise?: string | null;
-  email: string;
-  message: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "axel-projects".
- */
-export interface AxelProject {
-  id: number;
-  /**
-   * Donne le numéro affiché sur la carte : 1 → 001, 2 → 002…
-   */
-  order: number;
-  title: string;
-  /**
-   * La carte fait 6 lignes environ. Au-delà, ça déborde.
-   */
-  shortDescription: string;
-  longDescription?: string | null;
-  images?: (number | Media)[] | null;
-  stack?:
-    | {
-        name: string;
-        logo: number | Media;
-        id?: string | null;
-      }[]
-    | null;
-  liveUrl?: string | null;
-  year?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1116,18 +1040,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contacts';
         value: number | Contact;
-      } | null)
-    | ({
-        relationTo: 'enzo-projects';
-        value: number | EnzoProject;
-      } | null)
-    | ({
-        relationTo: 'enzo-contacts';
-        value: number | EnzoContact;
-      } | null)
-    | ({
-        relationTo: 'axel-projects';
-        value: number | AxelProject;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1529,65 +1441,6 @@ export interface ContactsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enzo-projects_select".
- */
-export interface EnzoProjectsSelect<T extends boolean = true> {
-  title?: T;
-  year?: T;
-  lieu?: T;
-  logo?: T;
-  description?: T;
-  stack?:
-    | T
-    | {
-        name?: T;
-        id?: T;
-      };
-  images?:
-    | T
-    | {
-        image?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "enzo-contacts_select".
- */
-export interface EnzoContactsSelect<T extends boolean = true> {
-  nom?: T;
-  entreprise?: T;
-  email?: T;
-  message?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "axel-projects_select".
- */
-export interface AxelProjectsSelect<T extends boolean = true> {
-  order?: T;
-  title?: T;
-  shortDescription?: T;
-  longDescription?: T;
-  images?: T;
-  stack?:
-    | T
-    | {
-        name?: T;
-        logo?: T;
-        id?: T;
-      };
-  liveUrl?: T;
-  year?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -1921,18 +1774,6 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "links-enzo".
- */
-export interface LinksEnzo {
-  id: number;
-  github?: string | null;
-  linkedin?: string | null;
-  strava?: string | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1973,18 +1814,6 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "links-enzo_select".
- */
-export interface LinksEnzoSelect<T extends boolean = true> {
-  github?: T;
-  linkedin?: T;
-  strava?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

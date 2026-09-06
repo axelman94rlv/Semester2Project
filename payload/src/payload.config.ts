@@ -15,6 +15,7 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { Projects } from './collections/Projects'
+import { EnzoProjects } from './collections/EnzoProjects'
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -80,7 +81,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts],
+  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts, EnzoProjects],
   globals: [Header, Footer],
   plugins,
   secret: process.env.PAYLOAD_SECRET,

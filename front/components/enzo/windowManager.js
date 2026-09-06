@@ -14,7 +14,7 @@ let highestZIndex = 1;
 let openedWindows = 0;
 
 const apps = {
-  finder: { build: () => Finder(), width: 940, height: 480 },
+  finder: { build: () => Finder(), width: 1120, height: 620 },
   mail: { build: () => Mail(), width: 900, height: 640 },
   contact: { build: () => Contact(), width: 760, height: 470 },
   launchpad: { build: () => Launchpad(), fullscreen: true },
@@ -311,7 +311,7 @@ function createFrame(windowStructure) {
   return {
     type: "div",
     attributes: [
-      ["class", ["enzo-window-frame", "absolute", "top-0", "left-0"]],
+      ["class", ["enzo-window-frame", "enzo-window-open", "absolute", "top-0", "left-0"]],
     ],
     children: [windowStructure],
   };
@@ -332,6 +332,7 @@ export function openApp(name) {
 
   if (app.fullscreen) {
     const overlay = generateStructure(app.build());
+    overlay.classList.add("enzo-launchpad-open");
     layer.appendChild(overlay);
     putOnTop(overlay);
     return;

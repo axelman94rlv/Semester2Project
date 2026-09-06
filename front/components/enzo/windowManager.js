@@ -3,7 +3,7 @@ import Finder from "./finder.js";
 import Mail from "./mail.js";
 import Contact from "./contact.js";
 import Launchpad from "./launchpad.js";
-import { projects, ProjectDetail } from "./projectDetail.js";
+import { ProjectDetail } from "./projectDetail.js";
 
 export const WINDOWS_LAYER_ID = "enzo-windows";
 
@@ -20,13 +20,6 @@ const apps = {
   launchpad: { build: () => Launchpad(), fullscreen: true },
 };
 
-for (const project of projects) {
-  apps["project-" + project.key] = {
-    build: () => ProjectDetail(project),
-    width: 1150,
-    height: 700,
-  };
-}
 
 export function registerApp(name, build, width = 820, height = 520) {
   apps[name] = { build, width, height };
@@ -317,7 +310,21 @@ function createFrame(windowStructure) {
   };
 }
 
-export function openApp(name) {
+function mountFrame(windowStructure, width, height) {
+  const layer = document.getElementById(WINDOWS_LAYER_ID);
+  const frame = generateStructure(createFrame(windowStructure));
+  layer.appendChild(frame);
+
+  applyStartSize(frame, layer, width, height);
+  placeInCascade(frame, layer);
+  putOnTop(frame);
+
+  enableDragging(frame);
+  enableResizing(frame, layer);
+  return frame;
+}
+
+export async function openApp(name) {
   const layer = document.getElementById(WINDOWS_LAYER_ID);
   if (!layer) return;
 
@@ -331,20 +338,26 @@ export function openApp(name) {
   }
 
   if (app.fullscreen) {
-    const overlay = generateStructure(app.build());
+    const overlay = generateStructure(await app.build());
     overlay.classList.add("enzo-launchpad-open");
     layer.appendChild(overlay);
     putOnTop(overlay);
     return;
   }
 
-  const frame = generateStructure(createFrame(app.build()));
-  layer.appendChild(frame);
+  mountFrame(await app.build(), app.width, app.height);
+}
 
-  applyStartSize(frame, layer, app.width, app.height);
-  placeInCascade(frame, layer);
-  putOnTop(frame);
+export function openProjectDetail(project) {
+  const layer = document.getElementById(WINDOWS_LAYER_ID);
+  if (!layer) return;
 
-  enableDragging(frame);
-  enableResizing(frame, layer);
+  const name = "project-" + project.id;
+  const alreadyOpen = layer.querySelector(`[data-window="${name}"]`);
+  if (alreadyOpen) {
+    putOnTop(alreadyOpen.closest(".enzo-window-frame") || alreadyOpen);
+    return;
+  }
+
+  mountFrame(ProjectDetail(project), 1150, 700);
 }

@@ -6,6 +6,24 @@ import githubIcon from "../../../lib/img/enzo/dock-github.svg";
 import linkedinIcon from "../../../lib/img/enzo/dock-linkedin.svg";
 import stravaIcon from "../../../lib/img/enzo/dock-strava.svg";
 import { openApp } from "../windowManager.js";
+import { API_BASE_URL } from "../../../api/config.js";
+
+const GITHUB_DEFAULT = "https://github.com";
+const LINKEDIN_DEFAULT = "https://www.linkedin.com/in/enzo-moita-a8479424a/";
+const STRAVA_DEFAULT = "https://www.strava.com/athletes/116644708";
+
+async function fetchLinks() {
+  try {
+    const response = await fetch(
+      API_BASE_URL + "/globals/links-enzo?t=" + Date.now(),
+    );
+    if (!response.ok) return {};
+    return await response.json();
+  } catch (error) {
+    console.error("Payload : impossible de charger les liens", error);
+    return {};
+  }
+}
 
 function DockIcon({ src, alt, app = null, href = null, onClick = null }) {
   if (app && !href && !onClick) {
@@ -66,7 +84,8 @@ function DockIcon({ src, alt, app = null, href = null, onClick = null }) {
   };
 }
 
-export function Dock() {
+export async function Dock() {
+  const links = await fetchLinks();
   return {
     type: "nav",
     attributes: [
@@ -98,16 +117,20 @@ export function Dock() {
       DockIcon({ src: mailIcon, alt: "Mail", app: "mail" }),
       DockIcon({ src: contactsIcon, alt: "Contacts", app: "contact" }),
       DockIcon({ src: vscodeIcon, alt: "VSCode", app: "launchpad" }),
-      DockIcon({ src: githubIcon, alt: "GitHub", app: "github" }),
+      DockIcon({
+        src: githubIcon,
+        alt: "GitHub",
+        href: links.github || GITHUB_DEFAULT,
+      }),
       DockIcon({
         src: linkedinIcon,
         alt: "LinkedIn",
-        href: "https://www.linkedin.com/in/enzo-moita-a8479424a/",
+        href: links.linkedin || LINKEDIN_DEFAULT,
       }),
       DockIcon({
         src: stravaIcon,
         alt: "Strava",
-        href: "https://www.strava.com/athletes/116644708",
+        href: links.strava || STRAVA_DEFAULT,
       }),
     ],
   };

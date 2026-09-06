@@ -16,6 +16,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { Projects } from './collections/Projects'
 import { EnzoProjects } from './collections/EnzoProjects'
+import { LinksEnzo } from './globals/LinksEnzo'
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -82,7 +83,7 @@ export default buildConfig({
     },
   }),
   collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts, EnzoProjects],
-  globals: [Header, Footer],
+  globals: [Header, Footer, LinksEnzo],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

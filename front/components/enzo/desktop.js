@@ -4,7 +4,7 @@ import Dock from "./components/dock.js";
 import Notification from "./components/notification.js";
 import { WINDOWS_LAYER_ID, openApp } from "./windowManager.js";
 
-export default function Desktop({ children = [], notification = true } = {}) {
+export default async function Desktop({ children = [], notification = true } = {}) {
   return {
     type: "div",
     attributes: [
@@ -37,7 +37,7 @@ export default function Desktop({ children = [], notification = true } = {}) {
       },
 
       notification ? Notification({ onClick: () => openApp("mail") }) : null,
-      Dock(),
+      await Dock(),
     ],
   };
 }

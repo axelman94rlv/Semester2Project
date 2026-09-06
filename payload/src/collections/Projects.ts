@@ -17,14 +17,14 @@ export const Projects: CollectionConfig = {
     { name: 'role', type: 'text' },
     { name: 'liveUrl', type: 'text' },
     {
-      name: "competences",
-      type: "array",
-      label: "Compétences",
+      name: 'competences',
+      type: 'array',
+      label: 'Compétences',
       fields: [
         {
-          name: "name",
-          type: "text",
-          label: "Nom de la compétence",
+          name: 'name',
+          type: 'text',
+          label: 'Nom de la compétence',
           required: true,
         },
       ],

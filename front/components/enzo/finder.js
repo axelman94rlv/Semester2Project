@@ -10,40 +10,7 @@ import houseIcon from "../../lib/img/enzo/finder/house.svg";
 import driveIcon from "../../lib/img/enzo/finder/drive.svg";
 import chevronRight from "../../lib/img/enzo/finder/chevron-right.svg";
 import chevronDown from "../../lib/img/enzo/finder/chevron-down.svg";
-import snakeThumb from "../../lib/img/enzo/finder/project-snake.png";
-import pokedexThumb from "../../lib/img/enzo/finder/project-pokedex.png";
-import monitoringThumb from "../../lib/img/enzo/finder/project-monitoring.png";
-
-const PROJECTS = [
-  {
-    key: "snake",
-    name: "Snake game",
-    client: "EEMI",
-    date: "2025",
-    icon: snakeThumb,
-  },
-  {
-    key: "pokedex",
-    name: "Pokedex",
-    client: "EEMI",
-    date: "2025",
-    icon: pokedexThumb,
-  },
-  {
-    key: "dashboard",
-    name: "Dashboard",
-    client: "Daven",
-    date: "2026",
-    icon: monitoringThumb,
-  },
-  {
-    key: "monitoring",
-    name: "Monitoring",
-    client: "Daven",
-    date: "2026",
-    icon: monitoringThumb,
-  },
-];
+import { fetchEnzoProjects } from "./projectDetail.js";
 
 const SIDEBAR = [
   { type: "item", icon: folderBlue, label: "Projets", selected: true },
@@ -227,15 +194,56 @@ function ListHeader() {
   };
 }
 
-function openProjectWindow(event) {
-  const key = event.currentTarget.dataset.project;
-  import("./windowManager.js")
-    .then((m) => m.openApp("project-" + key))
-    .then(() => import("./projectDetail.js"))
-    .then((m) => m.loadProjectDetails(key));
+function openProjectDetailFor(project) {
+  import("./windowManager.js").then((m) => m.openProjectDetail(project));
 }
 
-function ProjectRow(project) {
+function projectThumb(project) {
+  const box = [
+    "w-[30px]",
+    "h-[30px]",
+    "rounded-[5px]",
+    "overflow-hidden",
+    "shrink-0",
+    "bg-black/5",
+    "flex",
+    "items-center",
+    "justify-center",
+  ];
+  const thumb = project.logo || project.images[0];
+  if (thumb) {
+    return {
+      type: "div",
+      attributes: [["class", box]],
+      children: [
+        {
+          type: "img",
+          attributes: [
+            ["src", thumb],
+            ["alt", ""],
+            ["class", ["w-full", "h-full", "object-cover"]],
+          ],
+        },
+      ],
+    };
+  }
+  return {
+    type: "div",
+    attributes: [["class", box]],
+    children: [
+      {
+        type: "img",
+        attributes: [
+          ["src", documentIcon],
+          ["alt", ""],
+          ["class", ["w-[16px]", "h-[16px]", "object-contain", "opacity-60"]],
+        ],
+      },
+    ],
+  };
+}
+
+function projectRow(project) {
   const secondary = [
     "text-[16px]",
     "leading-[20px]",
@@ -247,9 +255,7 @@ function ProjectRow(project) {
     type: "button",
     attributes: [
       ["type", "button"],
-      ["data-app", "project"],
-      ["data-project", project.key],
-      ["title", project.name],
+      ["title", project.title],
       [
         "class",
         [
@@ -264,9 +270,8 @@ function ProjectRow(project) {
         ],
       ],
     ],
-    events: [["click", openProjectWindow]],
+    events: [["click", () => openProjectDetailFor(project)]],
     children: [
-      // Colonne Nom
       {
         type: "div",
         attributes: [
@@ -292,32 +297,7 @@ function ProjectRow(project) {
               ["class", ["w-[9px]", "h-[13px]", "opacity-50", "shrink-0"]],
             ],
           },
-          {
-            type: "div",
-            attributes: [
-              [
-                "class",
-                [
-                  "w-[30px]",
-                  "h-[30px]",
-                  "rounded-[5px]",
-                  "overflow-hidden",
-                  "shrink-0",
-                  "bg-black/5",
-                ],
-              ],
-            ],
-            children: [
-              {
-                type: "img",
-                attributes: [
-                  ["src", project.icon],
-                  ["alt", ""],
-                  ["class", ["w-full", "h-full", "object-cover"]],
-                ],
-              },
-            ],
-          },
+          projectThumb(project),
           {
             type: "span",
             attributes: [
@@ -326,7 +306,7 @@ function ProjectRow(project) {
                 ["text-[16px]", "leading-[20px]", "text-black/85", "truncate"],
               ],
             ],
-            children: [project.name],
+            children: [project.title],
           },
         ],
       },
@@ -337,7 +317,7 @@ function ProjectRow(project) {
           {
             type: "span",
             attributes: [["class", secondary]],
-            children: [project.client],
+            children: [project.lieu],
           },
         ],
       },
@@ -348,7 +328,7 @@ function ProjectRow(project) {
           {
             type: "span",
             attributes: [["class", secondary]],
-            children: [project.date],
+            children: [project.year],
           },
         ],
       },
@@ -356,10 +336,26 @@ function ProjectRow(project) {
   };
 }
 
-export function Finder({ projects = PROJECTS, className = [] } = {}) {
+function messageRow(text) {
+  return {
+    type: "div",
+    attributes: [
+      ["class", ["px-[14px]", "py-[12px]", "text-[14px]", "text-black/40"]],
+    ],
+    children: [text],
+  };
+}
+
+export async function Finder({ className = [] } = {}) {
   const sidebarChildren = SIDEBAR.map((entry) =>
     entry.type === "label" ? SidebarLabel(entry.label) : SidebarItem(entry),
   );
+
+  const projects = await fetchEnzoProjects();
+  const rows =
+    projects.length > 0
+      ? projects.map(projectRow)
+      : [messageRow("Aucun projet")];
 
   return Window({
     name: "finder",
@@ -431,7 +427,7 @@ export function Finder({ projects = PROJECTS, className = [] } = {}) {
           {
             type: "div",
             attributes: [["class", ["flex-1", "min-w-0", "pt-[2px]"]]],
-            children: [ListHeader(), ...projects.map(ProjectRow)],
+            children: [ListHeader(), ...rows],
           },
         ],
       },

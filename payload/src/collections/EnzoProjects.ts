@@ -31,6 +31,12 @@ export const EnzoProjects: CollectionConfig = {
       label: 'Lieu',
     },
     {
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Logo (aperçu Finder)',
+    },
+    {
       name: 'description',
       type: 'textarea',
       label: 'Description',

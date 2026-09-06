@@ -75,6 +75,7 @@ export interface Config {
     projects: Project;
     contacts: Contact;
     'enzo-projects': EnzoProject;
+    'enzo-contacts': EnzoContact;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -100,6 +101,7 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
     'enzo-projects': EnzoProjectsSelect<false> | EnzoProjectsSelect<true>;
+    'enzo-contacts': EnzoContactsSelect<false> | EnzoContactsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -855,6 +857,19 @@ export interface EnzoProject {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enzo-contacts".
+ */
+export interface EnzoContact {
+  id: number;
+  nom: string;
+  entreprise?: string | null;
+  email: string;
+  message: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1074,6 +1089,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'enzo-projects';
         value: number | EnzoProject;
+      } | null)
+    | ({
+        relationTo: 'enzo-contacts';
+        value: number | EnzoContact;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1495,6 +1514,18 @@ export interface EnzoProjectsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enzo-contacts_select".
+ */
+export interface EnzoContactsSelect<T extends boolean = true> {
+  nom?: T;
+  entreprise?: T;
+  email?: T;
+  message?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -1,4 +1,5 @@
 import Window, { TrafficLights } from "./components/window.js";
+import { apiPost } from "../../api/payload.js";
 import sendIcon from "../../lib/img/enzo/mail/send.svg";
 import chevronDown from "../../lib/img/enzo/mail/chevron-down.svg";
 import replyIcon from "../../lib/img/enzo/mail/reply.svg";
@@ -6,27 +7,55 @@ import attachIcon from "../../lib/img/enzo/mail/attach.svg";
 import emojiIcon from "../../lib/img/enzo/mail/emoji.svg";
 import photoIcon from "../../lib/img/enzo/mail/photo.svg";
 
-const CONTACT_EMAIL = "enzo.moita@ecole-decode.fr";
+function statusClass(state) {
+  const base = ["px-[16px]", "py-[10px]", "text-[13px]"];
+  if (state === "ok") return [...base, "text-[#12805c]"];
+  if (state === "error") return [...base, "text-[#e5484d]"];
+  return [...base, "text-black/50"];
+}
 
-function sendMail(event) {
+function setStatus(win, state, text) {
+  const status = win.querySelector(".enzo-mail-status");
+  if (!status) return;
+  status.className = ["enzo-mail-status", ...statusClass(state)].join(" ");
+  status.textContent = text;
+}
+
+async function submitContact(event) {
   const win = event.currentTarget.closest('[data-window="mail"]');
   if (!win) return;
 
   const value = (name) =>
     win.querySelector(`[name="${name}"]`)?.value.trim() ?? "";
 
-  const to = value("to") || CONTACT_EMAIL;
-  const cc = value("cc");
-  const subject = value("subject");
-  const body = value("body");
+  const nom = value("nom");
+  const entreprise = value("entreprise");
+  const email = value("email");
+  const message = value("message");
 
-  const params = [];
-  if (cc) params.push(`cc=${encodeURIComponent(cc)}`);
-  if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
-  if (body) params.push(`body=${encodeURIComponent(body)}`);
+  if (!nom || !email || !message) {
+    setStatus(win, "error", "Nom, email et message sont obligatoires.");
+    return;
+  }
 
-  const query = params.length ? `?${params.join("&")}` : "";
-  window.location.href = `mailto:${to}${query}`;
+  setStatus(win, "info", "Envoi…");
+
+  const result = await apiPost("/enzo-contacts", {
+    nom,
+    entreprise,
+    email,
+    message,
+  });
+
+  if (result) {
+    setStatus(win, "ok", "Message envoyé ✓");
+    for (const name of ["nom", "entreprise", "email", "message"]) {
+      const field = win.querySelector(`[name="${name}"]`);
+      if (field) field.value = "";
+    }
+  } else {
+    setStatus(win, "error", "Erreur lors de l'envoi. Réessayez.");
+  }
 }
 
 function ToolbarButton(
@@ -72,32 +101,7 @@ function ToolbarButton(
   };
 }
 
-function FieldRow(
-  label,
-  { name, type = "text", value = "", placeholder = "", trailing = null },
-) {
-  const inputAttrs = [
-    ["name", name],
-    ["type", type],
-    ["placeholder", placeholder],
-    ["aria-label", label],
-    [
-      "class",
-      [
-        "flex-1",
-        "min-w-0",
-        "bg-transparent",
-        "border-0",
-        "outline-none",
-        "text-[13px]",
-        "leading-[20px]",
-        "text-black/85",
-        "placeholder:text-black/30",
-      ],
-    ],
-  ];
-  if (value) inputAttrs.push(["value", value]);
-
+function FieldRow(label, { name, type = "text", placeholder = "" }) {
   return {
     type: "div",
     attributes: [
@@ -106,9 +110,9 @@ function FieldRow(
         [
           "flex",
           "items-center",
-          "gap-[8px]",
+          "gap-[12px]",
           "px-[16px]",
-          "h-[38px]",
+          "h-[44px]",
           "border-b",
           "border-black/[0.07]",
         ],
@@ -117,11 +121,33 @@ function FieldRow(
     children: [
       {
         type: "span",
-        attributes: [["class", ["shrink-0", "text-[13px]", "text-black/45"]]],
+        attributes: [
+          ["class", ["shrink-0", "w-[100px]", "text-[13px]", "text-black/45"]],
+        ],
         children: [label],
       },
-      { type: "input", attributes: inputAttrs },
-      trailing,
+      {
+        type: "input",
+        attributes: [
+          ["name", name],
+          ["type", type],
+          ["placeholder", placeholder],
+          ["aria-label", label],
+          [
+            "class",
+            [
+              "flex-1",
+              "min-w-0",
+              "bg-transparent",
+              "border-0",
+              "outline-none",
+              "text-[14px]",
+              "text-black/85",
+              "placeholder:text-black/30",
+            ],
+          ],
+        ],
+      },
     ],
   };
 }
@@ -130,7 +156,7 @@ export function Mail() {
   return Window({
     name: "mail",
     trafficLights: false,
-    className: ["enzo-sf", "w-[940px]", "max-w-[92vw]", "flex", "flex-col"],
+    className: ["enzo-sf", "w-[720px]", "max-w-[92vw]", "flex", "flex-col"],
     bodyClass: ["flex", "flex-col", "h-full"],
     children: [
       {
@@ -164,7 +190,7 @@ export function Mail() {
                 ],
                 children: [
                   ToolbarButton(sendIcon, "Envoyer", {
-                    onClick: sendMail,
+                    onClick: submitContact,
                     imgClass: ["w-[20px]", "h-[20px]"],
                   }),
                   {
@@ -185,39 +211,6 @@ export function Mail() {
             children: [
               ToolbarButton(replyIcon, "Répondre"),
               ToolbarButton(attachIcon, "Joindre un fichier"),
-              {
-                type: "button",
-                attributes: [
-                  ["type", "button"],
-                  ["title", "Police"],
-                  ["aria-label", "Police"],
-                  [
-                    "class",
-                    [
-                      "flex",
-                      "items-center",
-                      "justify-center",
-                      "w-[30px]",
-                      "h-[26px]",
-                      "rounded-[6px]",
-                      "hover:bg-black/5",
-                      "transition-colors",
-                    ],
-                  ],
-                ],
-                children: [
-                  {
-                    type: "span",
-                    attributes: [
-                      [
-                        "class",
-                        ["text-[15px]", "leading-none", "text-black/45"],
-                      ],
-                    ],
-                    children: ["Aa"],
-                  },
-                ],
-              },
               ToolbarButton(emojiIcon, "Emoji"),
               ToolbarButton(photoIcon, "Image"),
             ],
@@ -225,51 +218,49 @@ export function Mail() {
         ],
       },
 
-      FieldRow("À :", {
-        name: "to",
-        type: "email",
-        value: CONTACT_EMAIL,
-        trailing: {
-          type: "span",
-          attributes: [
-            [
-              "class",
-              [
-                "shrink-0",
-                "w-[18px]",
-                "h-[18px]",
-                "flex",
-                "items-center",
-                "justify-center",
-                "rounded-full",
-                "text-[#007aff]",
-                "text-[16px]",
-                "leading-none",
-              ],
+      {
+        type: "div",
+        attributes: [["class", ["px-[16px]", "pt-[16px]", "pb-[6px]"]]],
+        children: [
+          {
+            type: "h2",
+            attributes: [
+              ["class", ["text-[18px]", "font-bold", "text-black"]],
             ],
-          ],
-          children: ["+"],
-        },
+            children: ["Me contacter"],
+          },
+          {
+            type: "p",
+            attributes: [
+              ["class", ["text-[13px]", "text-black/50", "mt-[2px]"]],
+            ],
+            children: ["Envoyez-moi un message, je vous répondrai vite."],
+          },
+        ],
+      },
+
+      FieldRow("Nom", { name: "nom", placeholder: "Votre nom" }),
+      FieldRow("Entreprise", {
+        name: "entreprise",
+        placeholder: "Votre entreprise (facultatif)",
       }),
-      FieldRow("Cc :", { name: "cc", type: "email" }),
-      FieldRow("Objet :", { name: "subject", placeholder: "" }),
-      FieldRow("De :", {
-        name: "from",
+      FieldRow("Email", {
+        name: "email",
         type: "email",
-        placeholder: "votre@email.com",
+        placeholder: "vous@email.com",
       }),
 
       {
         type: "textarea",
         attributes: [
-          ["name", "body"],
+          ["name", "message"],
           ["aria-label", "Message"],
-          ["placeholder", "Écrivez votre message…"],
+          ["placeholder", "Votre message…"],
           [
             "class",
             [
               "flex-1",
-              "min-h-[26rem]",
+              "min-h-[12rem]",
               "w-full",
               "resize-none",
               "bg-transparent",
@@ -277,7 +268,7 @@ export function Mail() {
               "outline-none",
               "px-[16px]",
               "py-[14px]",
-              "text-[13px]",
+              "text-[14px]",
               "leading-[1.5]",
               "text-black/85",
               "placeholder:text-black/30",
@@ -285,6 +276,52 @@ export function Mail() {
           ],
         ],
         children: [],
+      },
+
+      {
+        type: "div",
+        attributes: [
+          [
+            "class",
+            [
+              "flex",
+              "items-center",
+              "justify-between",
+              "border-t",
+              "border-black/10",
+            ],
+          ],
+        ],
+        children: [
+          {
+            type: "div",
+            attributes: [["class", ["enzo-mail-status", "px-[16px]", "py-[10px]", "text-[13px]", "text-black/50"]]],
+            children: [""],
+          },
+          {
+            type: "button",
+            attributes: [
+              ["type", "button"],
+              [
+                "class",
+                [
+                  "mr-[14px]",
+                  "px-[18px]",
+                  "h-[32px]",
+                  "rounded-[8px]",
+                  "bg-[#007aff]",
+                  "hover:bg-[#0069d9]",
+                  "text-white",
+                  "text-[13px]",
+                  "font-medium",
+                  "transition-colors",
+                ],
+              ],
+            ],
+            events: [["click", submitContact]],
+            children: ["Envoyer"],
+          },
+        ],
       },
     ],
   });

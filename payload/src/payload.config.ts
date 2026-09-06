@@ -16,6 +16,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { Projects } from './collections/Projects'
 import { EnzoProjects } from './collections/EnzoProjects'
+import { EnzoContacts } from './collections/EnzoContacts'
 import { LinksEnzo } from './globals/LinksEnzo'
 
 
@@ -82,7 +83,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts, EnzoProjects],
+  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts, EnzoProjects, EnzoContacts],
   globals: [Header, Footer, LinksEnzo],
   plugins,
   secret: process.env.PAYLOAD_SECRET,

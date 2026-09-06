@@ -75,6 +75,7 @@ export interface Config {
     projects: Project;
     contacts: Contact;
     'enzo-projects': EnzoProject;
+    'enzo-contacts': EnzoContact;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -100,6 +101,7 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
     'enzo-projects': EnzoProjectsSelect<false> | EnzoProjectsSelect<true>;
+    'enzo-contacts': EnzoContactsSelect<false> | EnzoContactsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -118,10 +120,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    'links-enzo': LinksEnzo;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'links-enzo': LinksEnzoSelect<false> | LinksEnzoSelect<true>;
   };
   locale: null;
   widgets: {
@@ -834,6 +838,7 @@ export interface EnzoProject {
   title: string;
   year?: number | null;
   lieu?: string | null;
+  logo?: (number | null) | Media;
   description?: string | null;
   stack?:
     | {
@@ -847,6 +852,19 @@ export interface EnzoProject {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enzo-contacts".
+ */
+export interface EnzoContact {
+  id: number;
+  nom: string;
+  entreprise?: string | null;
+  email: string;
+  message: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -1071,6 +1089,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'enzo-projects';
         value: number | EnzoProject;
+      } | null)
+    | ({
+        relationTo: 'enzo-contacts';
+        value: number | EnzoContact;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1478,6 +1500,7 @@ export interface EnzoProjectsSelect<T extends boolean = true> {
   title?: T;
   year?: T;
   lieu?: T;
+  logo?: T;
   description?: T;
   stack?:
     | T
@@ -1491,6 +1514,18 @@ export interface EnzoProjectsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enzo-contacts_select".
+ */
+export interface EnzoContactsSelect<T extends boolean = true> {
+  nom?: T;
+  entreprise?: T;
+  email?: T;
+  message?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1829,6 +1864,18 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "links-enzo".
+ */
+export interface LinksEnzo {
+  id: number;
+  github?: string | null;
+  linkedin?: string | null;
+  strava?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1869,6 +1916,18 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "links-enzo_select".
+ */
+export interface LinksEnzoSelect<T extends boolean = true> {
+  github?: T;
+  linkedin?: T;
+  strava?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

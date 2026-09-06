@@ -15,6 +15,9 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { Projects } from './collections/Projects'
+import { EnzoProjects } from './collections/EnzoProjects'
+import { EnzoContacts } from './collections/EnzoContacts'
+import { LinksEnzo } from './globals/LinksEnzo'
 import { Profiles } from './collections/Profiles'
 import { AxelProjects } from './collections/AxelProjects'
 
@@ -24,7 +27,12 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   serverURL: 'http://localhost:3000',
 
-  cors: ['http://127.0.0.1:3001', 'http://localhost:3001', 'http://localhost:5173'],
+  cors: [
+    'http://127.0.0.1:3001',
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://localhost:5174',
+  ],
 
   csrf: ['http://127.0.0.1:3001', 'http://localhost:3001', 'http://localhost:5173'],
 
@@ -72,8 +80,19 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Projects, Contacts, Profiles, AxelProjects],
-  globals: [Header, Footer],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Projects,
+    Contacts,
+    EnzoProjects,
+    EnzoContacts,
+    AxelProjects,
+  ],
+  globals: [Header, Footer, LinksEnzo],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

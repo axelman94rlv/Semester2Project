@@ -18,6 +18,8 @@ import { Projects } from './collections/Projects'
 import { EnzoProjects } from './collections/EnzoProjects'
 import { EnzoContacts } from './collections/EnzoContacts'
 import { LinksEnzo } from './globals/LinksEnzo'
+import { Profiles } from './collections/Profiles'
+import { AxelProjects } from './collections/AxelProjects'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -88,6 +90,7 @@ export default buildConfig({
     Contacts,
     EnzoProjects,
     EnzoContacts,
+    AxelProjects,
   ],
   globals: [Header, Footer, LinksEnzo],
   plugins,

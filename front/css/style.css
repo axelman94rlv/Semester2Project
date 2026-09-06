@@ -81,6 +81,15 @@
   font-style: normal;
 }
 
+/* Audiowide - Axel BARBELLION */
+
+@font-face {
+  font-family: "AudiowideCustom";
+  src: url("/fonts/Audiowide/Audiowide-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 html {
   scroll-behavior: smooth;
 }

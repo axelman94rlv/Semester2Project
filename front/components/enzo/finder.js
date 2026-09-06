@@ -227,6 +227,14 @@ function ListHeader() {
   };
 }
 
+function openProjectWindow(event) {
+  const key = event.currentTarget.dataset.project;
+  import("./windowManager.js")
+    .then((m) => m.openApp("project-" + key))
+    .then(() => import("./projectDetail.js"))
+    .then((m) => m.loadProjectImages(key));
+}
+
 function ProjectRow(project) {
   const secondary = [
     "text-[13px]",
@@ -256,6 +264,7 @@ function ProjectRow(project) {
         ],
       ],
     ],
+    events: [["click", openProjectWindow]],
     children: [
       // Colonne Nom
       {
@@ -369,7 +378,14 @@ export function Finder({ projects = PROJECTS, className = [] } = {}) {
         attributes: [
           [
             "class",
-            ["enzo-drag-handle", "cursor-move", "flex", "items-center", "px-[13px]", "py-[12px]"],
+            [
+              "enzo-drag-handle",
+              "cursor-move",
+              "flex",
+              "items-center",
+              "px-[13px]",
+              "py-[12px]",
+            ],
           ],
         ],
         children: [TrafficLights()],
@@ -380,7 +396,15 @@ export function Finder({ projects = PROJECTS, className = [] } = {}) {
         attributes: [
           [
             "class",
-            ["flex", "items-stretch", "gap-[10px]", "px-[10px]", "pb-[12px]", "flex-1", "min-h-0"],
+            [
+              "flex",
+              "items-stretch",
+              "gap-[10px]",
+              "px-[10px]",
+              "pb-[12px]",
+              "flex-1",
+              "min-h-0",
+            ],
           ],
         ],
         children: [

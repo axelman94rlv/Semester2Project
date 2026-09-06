@@ -1,6 +1,8 @@
 function closeNearestWindow(event) {
   event.stopPropagation();
-  const win = event.currentTarget.closest("[data-window]");
+  const win =
+    event.currentTarget.closest(".enzo-window-frame") ||
+    event.currentTarget.closest("[data-window]");
   if (win) win.remove();
 }
 

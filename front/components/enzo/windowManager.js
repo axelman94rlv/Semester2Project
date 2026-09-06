@@ -3,6 +3,7 @@ import Finder from "./finder.js";
 import Mail from "./mail.js";
 import Contact from "./contact.js";
 import Launchpad from "./launchpad.js";
+import { projects, ProjectDetail } from "./projectDetail.js";
 
 export const WINDOWS_LAYER_ID = "enzo-windows";
 
@@ -16,9 +17,16 @@ const apps = {
   finder: { build: () => Finder(), width: 940, height: 480 },
   mail: { build: () => Mail(), width: 900, height: 640 },
   contact: { build: () => Contact(), width: 760, height: 470 },
-  // Le launchpad est un écran plein écran (pas une fenêtre déplaçable).
   launchpad: { build: () => Launchpad(), fullscreen: true },
 };
+
+for (const project of projects) {
+  apps["project-" + project.key] = {
+    build: () => ProjectDetail(project),
+    width: 1150,
+    height: 700,
+  };
+}
 
 export function registerApp(name, build, width = 820, height = 520) {
   apps[name] = { build, width, height };
@@ -212,7 +220,6 @@ const resizeHandles = [
   },
 ];
 
-// Ajoute les poignées de redimensionnement au cadre.
 function enableResizing(frame, layer) {
   for (const handle of resizeHandles) {
     const element = document.createElement("div");

@@ -1,5 +1,3 @@
-import Link from "../../components/router/link.js";
-
 
 import { NavBar } from "../../components/baptiste/components/nav.js";
 import { Intro } from "../../components/baptiste/intro.js";
